@@ -22,10 +22,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.eventplanner.screens.HomeScreen
 import com.example.eventplanner.ui.theme.EventPlannerTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 
+@ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -72,10 +74,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+
 
 @Composable
 fun BottomNavigationBar(
@@ -105,6 +104,7 @@ fun BottomNavigationBar(
     }
 }
 
+@ExperimentalMaterial3Api
 @Composable
 fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home") {
@@ -120,15 +120,7 @@ fun Navigation(navController: NavHostController) {
     }
 }
 
-@Composable
-fun HomeScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Home Screen")
-    }
-}
+
 
 @Composable
 fun FriendsScreen() {
@@ -150,10 +142,3 @@ fun SettingsScreen() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    EventPlannerTheme {
-        Greeting("Android")
-    }
-}
