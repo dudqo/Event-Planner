@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.eventplanner.screens.HomeScreen
 import com.example.eventplanner.ui.theme.EventPlannerTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.navigation.NavGraph.Companion.findStartDestination
 
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
@@ -60,7 +61,13 @@ class MainActivity : ComponentActivity() {
                                 ),
                                 navController = navController,
                                 onItemClick = {
-                                    navController.navigate(it.route)
+                                    navController.navigate(it.route){
+                                        launchSingleTop = true
+                                        popUpTo(navController.graph.findStartDestination().id){
+                                            saveState = true
+                                        }
+                                        restoreState = true
+                                    }
                                 }
                             )
 
