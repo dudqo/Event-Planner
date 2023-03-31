@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
@@ -25,7 +26,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.eventplanner.screens.HomeScreen
 import com.example.eventplanner.ui.theme.EventPlannerTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.eventplanner.screens.EventsScreen
 
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
@@ -47,6 +51,11 @@ class MainActivity : ComponentActivity() {
                                         name = "Home",
                                         route = "home",
                                         icon = Icons.Default.Home
+                                    ),
+                                    BottomNavItem(
+                                        name = "Events",
+                                        route = "events",
+                                        icon = Icons.Default.List
                                     ),
                                     BottomNavItem(
                                         name = "Friends",
@@ -117,6 +126,9 @@ fun Navigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             HomeScreen()
+        }
+        composable("events") {
+            EventsScreen()
         }
         composable("friends") {
             FriendsScreen()

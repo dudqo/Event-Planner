@@ -1,5 +1,6 @@
 package com.example.eventplanner.screens
 
+import android.widget.SearchView
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
