@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 data class EventEntity(
     @PrimaryKey val id: Int? = null,
     val title: String,
-    val lati: String,
-    val longi : String,
-    val address: String,
+    val lati: Double,
+    val longi : Double,
+    val address: String?,
     val desc: String,
     val time: String,
     val isPublic: Boolean = true

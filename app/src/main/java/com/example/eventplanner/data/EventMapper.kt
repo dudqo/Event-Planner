@@ -14,8 +14,8 @@ fun EventEntity.toEvent(): Event {
     )
 }
 
-fun Event.toEventEntity(): Event {
-    return Event(
+fun Event.toEventEntity(): EventEntity {
+    return EventEntity(
         title = title,
         lati = lati,
         longi = longi,

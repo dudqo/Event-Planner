@@ -1,5 +1,6 @@
 package com.example.eventplanner
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,11 +29,14 @@ import com.example.eventplanner.ui.theme.EventPlannerTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.eventplanner.screens.EventsScreen
+import com.example.eventplanner.screens.MapViewModel
 
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -99,13 +103,13 @@ fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     onItemClick: (BottomNavItem) -> Unit
 ) {
-    val backStateEnty = navController.currentBackStackEntryAsState()
+    val backStateEntry = navController.currentBackStackEntryAsState()
     NavigationBar(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background
     ) {
         items.forEach {item ->
-            val selected = item.route == backStateEnty.value?.destination?.route
+            val selected = item.route == backStateEntry.value?.destination?.route
             NavigationBarItem(
                 selected = selected,
                 onClick = { onItemClick(item) },

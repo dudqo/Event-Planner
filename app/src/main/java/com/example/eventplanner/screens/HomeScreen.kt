@@ -1,34 +1,77 @@
 package com.example.eventplanner.screens
 
+import android.annotation.SuppressLint
 import android.widget.SearchView
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberScaffoldState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.eventplanner.MapEvent
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+
 
 @ExperimentalMaterial3Api
 @Composable
 fun HomeScreen(
     viewModel: MapViewModel = viewModel()
 ) {
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val uiSettings = remember {
         MapUiSettings(zoomControlsEnabled = false)
     }
+    var longPressed = false
+    var tempLocat: LatLng
     Scaffold(
-        scaffoldState = scaffoldState
-
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) {
         GoogleMap(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize(),
             properties = viewModel.state.properties,
-            uiSettings = uiSettings
-        )
+            uiSettings = uiSettings,
+            onMapLongClick = {
+                longPressed = true
+                tempLocat = it
+                /*viewModel.onEvent(
+                    MapEvent.OnMapLongClick(it)
+                )*/
+            }
+
+        ) {
+            if (longPressed) {
+                Marker(
+                    position = LatLng(viewModel.lati.toDouble(), viewModel.longi.toDouble()),
+                    title = "Title of the event",
+                    snippet = "Long click to create new event",
+                    onInfoWindowLongClick = {}
+
+                )
+            }
+
+
+            viewModel.state.eventLocation.forEach {locat ->
+                Marker(
+                    position = LatLng(locat.lati, locat.longi),
+                    title = "Title of the event",
+                    snippet = "Long click to create new event",
+                    onInfoWindowLongClick = {
+                        viewModel.onEvent(
+                            MapEvent.onInfoWindowLongClick(locat)
+                        )
+                    }
+
+                )
+            }
+        }
     }
 }
