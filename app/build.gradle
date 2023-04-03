@@ -87,4 +87,6 @@ dependencies {
 
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:2.5.1"
+
+    implementation 'com.google.accompanist:accompanist-permissions:0.24.13-rc'
 }

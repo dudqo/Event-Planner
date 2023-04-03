@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
@@ -33,58 +34,63 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.eventplanner.screens.EventsScreen
 import com.example.eventplanner.screens.MapViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        /*val locationPermissionState = rememberPermissionState(
+            android.Manifest.permission.ACCESS_FINE_LOCATION
+        )*/
         setContent {
             EventPlannerTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
-                    Scaffold(
-                        bottomBar = {
-                            BottomNavigationBar(
-                                items = listOf(
-                                    BottomNavItem(
-                                        name = "Home",
-                                        route = "home",
-                                        icon = Icons.Default.Home
-                                    ),
-                                    BottomNavItem(
-                                        name = "Events",
-                                        route = "events",
-                                        icon = Icons.Default.List
-                                    ),
-                                    BottomNavItem(
-                                        name = "Friends",
-                                        route = "friends",
-                                        icon = Icons.Default.Person
-                                    ),
-                                    BottomNavItem(
-                                        name = "Settings",
-                                        route = "settings",
-                                        icon = Icons.Default.Settings
-                                    ),
-                                ),
-                                navController = navController,
-                                onItemClick = {
-                                    navController.navigate(it.route){
-                                        launchSingleTop = true
-                                        popUpTo(navController.graph.findStartDestination().id){
-                                            saveState = true
-                                        }
-                                        restoreState = true
-                                    }
-                                }
-                            )
 
-                        }
+                val navController = rememberNavController()
+                Scaffold(
+                    bottomBar = {
+                        BottomNavigationBar(
+                            items = listOf(
+                                BottomNavItem(
+                                    name = "Home",
+                                    route = "home",
+                                    icon = Icons.Default.Home
+                                ),
+                                BottomNavItem(
+                                    name = "Events",
+                                    route = "events",
+                                    icon = Icons.Default.List
+                                ),
+                                BottomNavItem(
+                                    name = "Friends",
+                                    route = "friends",
+                                    icon = Icons.Default.Person
+                                ),
+                                BottomNavItem(
+                                    name = "Settings",
+                                    route = "settings",
+                                    icon = Icons.Default.Settings
+                                ),
+                            ),
+                            navController = navController,
+                            onItemClick = {
+                                navController.navigate(it.route) {
+                                    launchSingleTop = true
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    restoreState = true
+                                }
+                            }
+                        )
+
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier.padding(it)
                     ) {
                         Navigation(navController = navController)
                     }

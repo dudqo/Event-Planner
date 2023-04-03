@@ -28,8 +28,6 @@ fun HomeScreen(
     val uiSettings = remember {
         MapUiSettings(zoomControlsEnabled = false)
     }
-    var longPressed = false
-    var tempLocat: LatLng
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) {
@@ -40,20 +38,21 @@ fun HomeScreen(
             properties = viewModel.state.properties,
             uiSettings = uiSettings,
             onMapLongClick = {
-                longPressed = true
-                tempLocat = it
-                /*viewModel.onEvent(
+                viewModel.onEvent(
                     MapEvent.OnMapLongClick(it)
-                )*/
+                )
             }
 
         ) {
-            if (longPressed) {
+            if (viewModel.longPressed) {
                 Marker(
-                    position = LatLng(viewModel.lati.toDouble(), viewModel.longi.toDouble()),
-                    title = "Title of the event",
-                    snippet = "Long click to create new event",
-                    onInfoWindowLongClick = {}
+                    position = LatLng(viewModel.lati, viewModel.longi),
+                    title = "CREATE NEW EVENT",
+                    snippet = "Tap to create new event",
+                    onInfoWindowClick = {
+                        TODO()
+
+                    }
 
                 )
             }

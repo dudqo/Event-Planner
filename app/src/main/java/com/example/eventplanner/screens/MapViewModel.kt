@@ -18,15 +18,17 @@ import javax.inject.Inject
 class MapViewModel (): ViewModel() {
 
     var state by mutableStateOf(MapState())
-    var longi by mutableStateOf("")
-    var lati by mutableStateOf("")
+    var longi by mutableStateOf(0.00)
+    var lati by mutableStateOf(0.00)
+    var longPressed by mutableStateOf(false)
 
 
     fun onEvent(event: MapEvent) {
         when(event) {
             is MapEvent.OnMapLongClick -> {
-                lati = event.coord.latitude.toString()
-                longi = event.coord.longitude.toString()
+                lati = event.coord.latitude
+                longi = event.coord.longitude
+                longPressed = true
             }
 
             is MapEvent.onInfoWindowLongClick -> {
