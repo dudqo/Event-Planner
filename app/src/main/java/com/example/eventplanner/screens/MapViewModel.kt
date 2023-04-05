@@ -21,6 +21,7 @@ class MapViewModel (): ViewModel() {
     var longi by mutableStateOf(0.00)
     var lati by mutableStateOf(0.00)
     var longPressed by mutableStateOf(false)
+    var lastKnownUserLocation by mutableStateOf(0.00)
 
 
     fun onEvent(event: MapEvent) {

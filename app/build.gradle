@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -19,10 +20,6 @@ android {
             useSupportLibrary true
         }
 
-        Properties properties = new Properties()
-        properties.load(project.rootProject.file("local.properties").newDataInputStream())
-
-        manifestPlaceholders = [GOOGLE_MAPS_API_KEY: properties['GOOGLE_MAPS_API_KEY']]
     }
 
     buildTypes {
