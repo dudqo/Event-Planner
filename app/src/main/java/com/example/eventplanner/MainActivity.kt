@@ -1,9 +1,13 @@
 package com.example.eventplanner
 
+import android.Manifest
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,28 +32,29 @@ import androidx.navigation.compose.rememberNavController
 import com.example.eventplanner.screens.HomeScreen
 import com.example.eventplanner.ui.theme.EventPlannerTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.eventplanner.screens.EventsScreen
 import com.example.eventplanner.screens.MapViewModel
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.*
 
+@OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalPermissionsApi::class)
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        /*val locationPermissionState = rememberPermissionState(
-            android.Manifest.permission.ACCESS_FINE_LOCATION
-        )*/
         setContent {
             EventPlannerTheme {
-
                 val navController = rememberNavController()
+
                 Scaffold(
                     bottomBar = {
                         BottomNavigationBar(
@@ -99,7 +104,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 
 @Composable
@@ -170,4 +174,5 @@ fun SettingsScreen() {
         Text(text = "Home3 Screen")
     }
 }
+
 
