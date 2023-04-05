@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,17 +44,35 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.eventplanner.screens.EventsScreen
 import com.example.eventplanner.screens.MapViewModel
 import com.google.accompanist.permissions.*
+import com.google.maps.android.compose.MapProperties
 
 @OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) {}
 
+    private fun askLocationPermission() = when {
+        ContextCompat.checkSelfPermission(
+            this,
+            ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED -> {}
+        else -> {
+            requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+        }
+    }
+
+    @SuppressLint("PermissionLaunchedDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             EventPlannerTheme {
                 val navController = rememberNavController()
+
+                askLocationPermission()
 
                 Scaffold(
                     bottomBar = {
