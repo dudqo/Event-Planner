@@ -14,29 +14,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @ExperimentalMaterial3Api
 @Composable
-fun EventsScreen() {
+fun EventsScreen(navController: NavController) {
 
-    Card(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp).fillMaxWidth(),
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.Add, contentDescription = "Create New Event")
+            }
+        }
     ) {
-        LazyColumn(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.Center,
+        Card(
+            modifier = Modifier.padding(it)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .fillMaxWidth(),
         ) {
-            items(100) {
-                Text(
-                    text = "Event $it",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp)
-                )
+            LazyColumn(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                items(100) {
+                    Text(
+                        text = "Event $it",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp)
+                    )
+
+                }
 
             }
-
         }
     }
 

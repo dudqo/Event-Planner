@@ -1,26 +1,22 @@
-package com.example.eventplanner.screens
+package com.example.eventplanner.screens.sign_in
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.eventplanner.domain.model.Event
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
+@OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalMaterial3Api
 @Composable
-fun EventCreateScreen() {
+fun LoginScreen() {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Event Creation Screen")
+        Text(text = "Login Screen")
     }
-
 }

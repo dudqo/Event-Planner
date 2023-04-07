@@ -41,6 +41,7 @@ import androidx.compose.ui.window.Popup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.eventplanner.graphs.RootNavGraph
 import com.example.eventplanner.screens.EventsScreen
 import com.example.eventplanner.screens.MapViewModel
 import com.google.accompanist.permissions.*
@@ -70,104 +71,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             EventPlannerTheme {
-                val navController = rememberNavController()
-
                 askLocationPermission()
-
-                Scaffold(
-                    bottomBar = {
-                        BottomNavigationBar(
-                            items = listOf(
-                                BottomNavItem(
-                                    name = "Home",
-                                    route = "home",
-                                    icon = Icons.Default.Home
-                                ),
-                                BottomNavItem(
-                                    name = "Events",
-                                    route = "events",
-                                    icon = Icons.Default.List
-                                ),
-                                BottomNavItem(
-                                    name = "Friends",
-                                    route = "friends",
-                                    icon = Icons.Default.Person
-                                ),
-                                BottomNavItem(
-                                    name = "Settings",
-                                    route = "settings",
-                                    icon = Icons.Default.Settings
-                                ),
-                            ),
-                            navController = navController,
-                            onItemClick = {
-                                navController.navigate(it.route) {
-                                    launchSingleTop = true
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    restoreState = true
-                                }
-                            }
-                        )
-
-                    }
-                ) {
-                    Box(
-                        modifier = Modifier.padding(it)
-                    ) {
-                        Navigation(navController = navController)
-                    }
-                }
+                RootNavGraph(navController = rememberNavController())
             }
-        }
-    }
-}
-
-
-@Composable
-fun BottomNavigationBar(
-    items: List<BottomNavItem>,
-    navController: NavHostController,
-    modifier: Modifier = Modifier,
-    onItemClick: (BottomNavItem) -> Unit
-) {
-    val backStateEntry = navController.currentBackStackEntryAsState()
-    NavigationBar(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background
-    ) {
-        items.forEach {item ->
-            val selected = item.route == backStateEntry.value?.destination?.route
-            NavigationBarItem(
-                selected = selected,
-                onClick = { onItemClick(item) },
-                icon = {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = item.name
-                    )
-                }
-            )
-        }
-    }
-}
-
-@ExperimentalMaterial3Api
-@Composable
-fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") {
-            HomeScreen()
-        }
-        composable("events") {
-            EventsScreen()
-        }
-        composable("friends") {
-            FriendsScreen()
-        }
-        composable("settings") {
-            SettingsScreen()
         }
     }
 }
@@ -180,7 +86,7 @@ fun FriendsScreen() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Home2 Screen")
+        Text(text = "Friends Screen")
     }
 }
 
@@ -190,7 +96,7 @@ fun SettingsScreen() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Home3 Screen")
+        Text(text = "Settings Screen")
     }
 }
 

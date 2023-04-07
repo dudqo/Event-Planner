@@ -16,10 +16,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.eventplanner.MapEvent
+import com.example.eventplanner.graphs.Graph
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -32,7 +34,8 @@ import com.google.maps.android.compose.*
 @ExperimentalMaterial3Api
 @Composable
 fun HomeScreen(
-    viewModel: MapViewModel = viewModel()
+    viewModel: MapViewModel = viewModel(),
+    navController: NavHostController = rememberNavController()
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val uiSettings = remember {
@@ -67,6 +70,7 @@ fun HomeScreen(
                     title = "CREATE NEW EVENT",
                     snippet = "Tap to create new event",
                     onInfoWindowClick = {
+                        //navController.navigate(Graph.EVENT)
 
                     }
 
