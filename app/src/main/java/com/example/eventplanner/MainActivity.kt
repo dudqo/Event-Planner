@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,115 +41,39 @@ import androidx.compose.ui.window.Popup
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.eventplanner.graphs.RootNavGraph
 import com.example.eventplanner.screens.EventsScreen
 import com.example.eventplanner.screens.MapViewModel
 import com.google.accompanist.permissions.*
+import com.google.maps.android.compose.MapProperties
 
 @OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalMaterial3Api
 class MainActivity : ComponentActivity() {
 
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) {}
 
+    private fun askLocationPermission() = when {
+        ContextCompat.checkSelfPermission(
+            this,
+            ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED -> {}
+        else -> {
+            requestPermissionLauncher.launch(ACCESS_FINE_LOCATION)
+        }
+    }
+
+    @SuppressLint("PermissionLaunchedDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             EventPlannerTheme {
-                val navController = rememberNavController()
-
-                Scaffold(
-                    bottomBar = {
-                        BottomNavigationBar(
-                            items = listOf(
-                                BottomNavItem(
-                                    name = "Home",
-                                    route = "home",
-                                    icon = Icons.Default.Home
-                                ),
-                                BottomNavItem(
-                                    name = "Events",
-                                    route = "events",
-                                    icon = Icons.Default.List
-                                ),
-                                BottomNavItem(
-                                    name = "Friends",
-                                    route = "friends",
-                                    icon = Icons.Default.Person
-                                ),
-                                BottomNavItem(
-                                    name = "Settings",
-                                    route = "settings",
-                                    icon = Icons.Default.Settings
-                                ),
-                            ),
-                            navController = navController,
-                            onItemClick = {
-                                navController.navigate(it.route) {
-                                    launchSingleTop = true
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    restoreState = true
-                                }
-                            }
-                        )
-
-                    }
-                ) {
-                    Box(
-                        modifier = Modifier.padding(it)
-                    ) {
-                        Navigation(navController = navController)
-                    }
-                }
+                askLocationPermission()
+                RootNavGraph(navController = rememberNavController())
             }
-        }
-    }
-}
-
-
-@Composable
-fun BottomNavigationBar(
-    items: List<BottomNavItem>,
-    navController: NavHostController,
-    modifier: Modifier = Modifier,
-    onItemClick: (BottomNavItem) -> Unit
-) {
-    val backStateEntry = navController.currentBackStackEntryAsState()
-    NavigationBar(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background
-    ) {
-        items.forEach {item ->
-            val selected = item.route == backStateEntry.value?.destination?.route
-            NavigationBarItem(
-                selected = selected,
-                onClick = { onItemClick(item) },
-                icon = {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = item.name
-                    )
-                }
-            )
-        }
-    }
-}
-
-@ExperimentalMaterial3Api
-@Composable
-fun Navigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "home") {
-        composable("home") {
-            HomeScreen()
-        }
-        composable("events") {
-            EventsScreen()
-        }
-        composable("friends") {
-            FriendsScreen()
-        }
-        composable("settings") {
-            SettingsScreen()
         }
     }
 }
@@ -161,7 +86,7 @@ fun FriendsScreen() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Home2 Screen")
+        Text(text = "Friends Screen")
     }
 }
 
@@ -171,7 +96,7 @@ fun SettingsScreen() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(text = "Home3 Screen")
+        Text(text = "Settings Screen")
     }
 }
 
