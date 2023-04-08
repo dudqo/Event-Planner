@@ -8,6 +8,10 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -33,22 +37,26 @@ fun BottomNavBarScreen(
                     BottomNavItem(
                         name = "Home",
                         route = "home",
-                        icon = Icons.Default.Home
+                        icon_default = Icons.Outlined.Home,
+                        icon_selected = Icons.Filled.Home
                     ),
                     BottomNavItem(
                         name = "Events",
                         route = "events",
-                        icon = Icons.Default.List
+                        icon_default = Icons.Outlined.List,
+                        icon_selected = Icons.Filled.List
                     ),
                     BottomNavItem(
                         name = "Friends",
                         route = "friends",
-                        icon = Icons.Default.Person
+                        icon_default = Icons.Outlined.Person,
+                        icon_selected = Icons.Filled.Person
                     ),
                     BottomNavItem(
                         name = "Settings",
                         route = "settings",
-                        icon = Icons.Default.Settings
+                        icon_default = Icons.Outlined.Settings,
+                        icon_selected = Icons.Filled.Settings
                     ),
                 ),
                 navController = navController,
@@ -91,19 +99,18 @@ fun BottomNavigationBar(
                 selected = selected,
                 onClick = { onItemClick(item) },
                 icon = {
-                    Column(horizontalAlignment = CenterHorizontally) {
+                    if (selected) {
                         Icon(
-                            imageVector = item.icon,
+                            imageVector = item.icon_selected,
                             contentDescription = item.name
                         )
-                        if (selected) {
-                            Text(
-                                text = item.name,
-                                textAlign = TextAlign.Center,
-                                fontSize = 10.sp
-                            )
-                        }
+                    } else {
+                        Icon(
+                            imageVector = item.icon_default,
+                            contentDescription = item.name
+                        )
                     }
+
                 }
             )
         }

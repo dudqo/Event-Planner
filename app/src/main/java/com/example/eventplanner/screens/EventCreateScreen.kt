@@ -29,6 +29,7 @@ fun EventCreateScreen() {
     var isPrivate = remember { mutableStateOf(false) }
     var useCurrLocation = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
+    val openDialog = remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = {
@@ -63,6 +64,7 @@ fun EventCreateScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(it),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row() {
                 TextField(
@@ -100,10 +102,12 @@ fun EventCreateScreen() {
                 label = { Text(text = "Address") },
                 enabled = useCurrLocation.value.not()
             )
-            
-            DatePicker(
-                state = datePickerState
-            )
+            DatePickerDialog(
+                onDismissRequest = { /*TODO*/ },
+                confirmButton = { /*TODO*/ }
+            ) {
+
+            }
 
 
         }

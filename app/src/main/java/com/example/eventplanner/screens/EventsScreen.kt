@@ -33,13 +33,14 @@ fun EventsScreen(navController: NavController) {
     ) {
         Column() {
             Text(
-                "My Events", textAlign = TextAlign.Left, fontWeight = FontWeight.Bold, fontSize = 30.sp
+                "Events Nearby...", textAlign = TextAlign.Left, fontWeight = FontWeight.Bold, fontSize = 30.sp
             )
             LazyRow() {
                 items(100) {
                     Card(
                         modifier = Modifier
                             .padding(horizontal = 8.dp, vertical = 8.dp)
+                            .size(width = 140.dp, height = 200.dp)
                             .fillMaxWidth(),
                     ) {
                         Text(
@@ -56,7 +57,7 @@ fun EventsScreen(navController: NavController) {
                 }
             }
             Text(
-                "Events Nearby...", textAlign = TextAlign.Left, fontWeight = FontWeight.Bold, fontSize = 30.sp
+                "My Events", textAlign = TextAlign.Left, fontWeight = FontWeight.Bold, fontSize = 30.sp
             )
             LazyColumn(
                 modifier = Modifier.padding(it),
