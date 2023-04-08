@@ -7,7 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.example.eventplanner.FriendsScreen
+import com.example.eventplanner.screens.FriendsScreen
 import com.example.eventplanner.SettingsScreen
 import com.example.eventplanner.screens.EventCreateScreen
 import com.example.eventplanner.screens.EventViewScreen

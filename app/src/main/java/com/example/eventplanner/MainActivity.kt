@@ -78,18 +78,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-
-@Composable
-fun FriendsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Friends Screen")
-    }
-}
-
 @Composable
 fun SettingsScreen() {
     Box(
