@@ -41,7 +41,7 @@ fun NavGraphBuilder.eventNavGraph(navController: NavHostController) {
         startDestination = EventScreen.CreateScreen.route
     ) {
         composable(route = EventScreen.CreateScreen.route) {
-            EventCreateScreen()
+            EventCreateScreen(navController)
         }
         composable(route = EventScreen.ViewScreen.route) {
             EventViewScreen()
