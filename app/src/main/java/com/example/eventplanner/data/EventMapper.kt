@@ -5,8 +5,8 @@ import com.example.eventplanner.domain.model.Event
 fun EventEntity.toEvent(): Event {
     return Event(
         title = title,
-        lati = lati,
-        longi = longi,
+        lat = lat,
+        lng = lng,
         address = address,
         desc = desc,
         time = time,
@@ -17,8 +17,8 @@ fun EventEntity.toEvent(): Event {
 fun Event.toEventEntity(): EventEntity {
     return EventEntity(
         title = title,
-        lati = lati,
-        longi = longi,
+        lat = lat,
+        lng = lng,
         address = address,
         desc = desc,
         time = time,

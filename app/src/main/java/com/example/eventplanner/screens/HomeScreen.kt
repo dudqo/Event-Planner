@@ -66,7 +66,7 @@ fun HomeScreen(
         ) {
             if (viewModel.longPressed) {
                 Marker(
-                    position = LatLng(viewModel.lati, viewModel.longi),
+                    position = LatLng(viewModel.lat, viewModel.lng),
                     title = "CREATE NEW EVENT",
                     snippet = "Tap to create new event",
                     onInfoWindowClick = {
@@ -80,7 +80,7 @@ fun HomeScreen(
 
             viewModel.state.eventLocation.forEach {locat ->
                 Marker(
-                    position = LatLng(locat.lati, locat.longi),
+                    position = LatLng(locat.lat, locat.lng),
                     title = "Title of the event",
                     snippet = "Long click to create new event",
                     onInfoWindowLongClick = {

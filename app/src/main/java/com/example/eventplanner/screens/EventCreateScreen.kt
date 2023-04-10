@@ -30,14 +30,6 @@ fun EventCreateScreen(
     viewModel: EventsViewModel = viewModel()
 ) {
 
-    var title = remember { mutableStateOf("") }
-    var lati= remember { mutableStateOf(0.00) }
-    var longi = remember { mutableStateOf(0.00) }
-    var address = remember { mutableStateOf("") }
-    var desc = remember { mutableStateOf("") }
-    var time = remember { mutableStateOf("") }
-    var isPrivate = remember { mutableStateOf(false) }
-    var useCurrLocation = remember { mutableStateOf(false) }
     val openDateDialog = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
@@ -119,8 +111,8 @@ fun EventCreateScreen(
         ) {
             Row() {
                 TextField(
-                    value = title.value,
-                    onValueChange = { title.value = it },
+                    value = viewModel.title,
+                    onValueChange = { viewModel.onTitleChange(it) },
                     label = { Text(text = "Event Title") }
                 )
 
@@ -146,15 +138,15 @@ fun EventCreateScreen(
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Checkbox(
-                    checked = useCurrLocation.value,
-                    onCheckedChange = { useCurrLocation.value = it }
+                    checked = viewModel.useCurrLocation,
+                    onCheckedChange = { viewModel.onUseCurrLocationChange(it) }
                 )
             }
             TextField(
-                value = address.value,
-                onValueChange = { address.value = it },
+                value = viewModel.address,
+                onValueChange = { viewModel.onAddressChange(it) },
                 label = { Text(text = "Address") },
-                enabled = useCurrLocation.value.not()
+                enabled = viewModel.useCurrLocation.not()
             )
 
             Spacer(Modifier.height(30.dp))
@@ -213,8 +205,8 @@ fun EventCreateScreen(
             Spacer(Modifier.height(30.dp))
 
             TextField(
-                value = desc.value,
-                onValueChange = { desc.value = it },
+                value = viewModel.desc,
+                onValueChange = { viewModel.onDescChange(it) },
                 label = { Text(text = "Event Description") },
                 minLines = 5
             )
