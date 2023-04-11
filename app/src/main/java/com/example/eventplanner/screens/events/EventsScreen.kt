@@ -1,5 +1,6 @@
 package com.example.eventplanner.screens.events
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.eventplanner.graphs.EventScreen
 import com.example.eventplanner.graphs.Graph
 
 @ExperimentalMaterial3Api
@@ -38,30 +40,6 @@ fun EventsScreen(
     ) {
         Column() {
             Text(
-                "Events Nearby...", textAlign = TextAlign.Left, fontWeight = FontWeight.Bold, fontSize = 30.sp
-            )
-            LazyRow() {
-                items(100) {
-                    Card(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp, vertical = 8.dp)
-                            .size(width = 140.dp, height = 200.dp)
-                            .fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = "Event $it",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 24.dp)
-                        )
-
-                    }
-                }
-            }
-            Text(
                 "My Events", textAlign = TextAlign.Left, fontWeight = FontWeight.Bold, fontSize = 30.sp
             )
             LazyColumn(
@@ -74,7 +52,8 @@ fun EventsScreen(
                     Card(
                         modifier = Modifier
                             .padding(horizontal = 8.dp, vertical = 8.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .clickable { navController.navigate(EventScreen.ViewScreen.route) },
                     ) {
                         Text(
                             text = it.title,
