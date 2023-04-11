@@ -1,4 +1,4 @@
-package com.example.eventplanner.screens
+package com.example.eventplanner.screens.home
 
 import android.location.Location
 import com.example.eventplanner.domain.model.Event

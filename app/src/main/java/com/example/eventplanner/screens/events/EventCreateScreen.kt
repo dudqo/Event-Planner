@@ -1,10 +1,6 @@
-package com.example.eventplanner.screens
+package com.example.eventplanner.screens.events
 
-import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -12,22 +8,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.eventplanner.domain.model.Event
-import java.util.*
 
 @ExperimentalMaterial3Api
 @Composable
 fun EventCreateScreen(
     navController: NavHostController,
-    viewModel: EventsViewModel = viewModel()
+    viewModel: EventsViewModel = hiltViewModel()
 ) {
 
     val openDateDialog = remember { mutableStateOf(false) }
@@ -56,7 +48,9 @@ fun EventCreateScreen(
 
                     }
                     TextButton(onClick = {
-                        viewModel.saveEvent()
+                        viewModel.onEvent(
+                            EventsEvent.OnCreateEventClick
+                        )
                         navController.popBackStack()
                     }) {
                         Text(
@@ -112,7 +106,7 @@ fun EventCreateScreen(
             Row() {
                 TextField(
                     value = viewModel.title,
-                    onValueChange = { viewModel.onTitleChange(it) },
+                    onValueChange = { viewModel.onEvent(EventsEvent.OnTitleChange(it)) },
                     label = { Text(text = "Event Title") }
                 )
 
@@ -139,12 +133,12 @@ fun EventCreateScreen(
                 )
                 Checkbox(
                     checked = viewModel.useCurrLocation,
-                    onCheckedChange = { viewModel.onUseCurrLocationChange(it) }
+                    onCheckedChange = { viewModel.onEvent(EventsEvent.OnUseCurrLocationChange(it)) }
                 )
             }
             TextField(
                 value = viewModel.address,
-                onValueChange = { viewModel.onAddressChange(it) },
+                onValueChange = { viewModel.onEvent(EventsEvent.OnAddressChange(it)) },
                 label = { Text(text = "Address") },
                 enabled = viewModel.useCurrLocation.not()
             )
@@ -206,7 +200,7 @@ fun EventCreateScreen(
 
             TextField(
                 value = viewModel.desc,
-                onValueChange = { viewModel.onDescChange(it) },
+                onValueChange = { viewModel.onEvent(EventsEvent.OnDescChange(it)) },
                 label = { Text(text = "Event Description") },
                 minLines = 5
             )

@@ -16,7 +16,7 @@ class EventRepositoryImplementation(
         dao.deleteEvent(event.toEventEntity())
     }
 
-    override suspend fun getEvent(): Flow<List<Event>> {
+    override suspend fun getEvents(): Flow<List<Event>> {
         return dao.getEvents().map { events ->
             events.map {it.toEvent()}
         }

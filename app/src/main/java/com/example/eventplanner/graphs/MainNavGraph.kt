@@ -9,10 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.example.eventplanner.screens.FriendsScreen
 import com.example.eventplanner.SettingsScreen
-import com.example.eventplanner.screens.EventCreateScreen
-import com.example.eventplanner.screens.EventViewScreen
-import com.example.eventplanner.screens.EventsScreen
-import com.example.eventplanner.screens.HomeScreen
+import com.example.eventplanner.screens.events.EventCreateScreen
+import com.example.eventplanner.screens.events.EventViewScreen
+import com.example.eventplanner.screens.events.EventsScreen
+import com.example.eventplanner.screens.home.HomeScreen
 
 @ExperimentalMaterial3Api
 @Composable

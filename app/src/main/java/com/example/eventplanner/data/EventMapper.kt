@@ -10,7 +10,7 @@ fun EventEntity.toEvent(): Event {
         address = address,
         desc = desc,
         time = time,
-        isPublic = isPublic,
+        isPrivate = isPrivate,
     )
 }
 
@@ -22,6 +22,6 @@ fun Event.toEventEntity(): EventEntity {
         address = address,
         desc = desc,
         time = time,
-        isPublic = isPublic,
+        isPrivate = isPrivate,
     )
 }
