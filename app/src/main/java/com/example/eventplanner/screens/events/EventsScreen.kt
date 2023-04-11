@@ -1,8 +1,9 @@
-package com.example.eventplanner.screens
+package com.example.eventplanner.screens.events
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -15,12 +16,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.eventplanner.graphs.Graph
 
 @ExperimentalMaterial3Api
 @Composable
-fun EventsScreen(navController: NavController) {
+fun EventsScreen(
+    navController: NavController,
+    viewModel: EventsViewModel = hiltViewModel()
+) {
 
     Scaffold(
         floatingActionButton = {
@@ -65,14 +70,14 @@ fun EventsScreen(navController: NavController) {
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Center,
             ) {
-                items(100) {
+                items(viewModel.state.events) {
                     Card(
                         modifier = Modifier
                             .padding(horizontal = 8.dp, vertical = 8.dp)
                             .fillMaxWidth(),
                     ) {
                         Text(
-                            text = "Event $it",
+                            text = it.title,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,

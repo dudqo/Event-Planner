@@ -9,5 +9,5 @@ interface EventRepository {
 
     suspend fun deleteEvent(event: Event)
 
-    suspend fun getEvent(): Flow<List<Event>>
+    suspend fun getEvents(): Flow<List<Event>>
 }
