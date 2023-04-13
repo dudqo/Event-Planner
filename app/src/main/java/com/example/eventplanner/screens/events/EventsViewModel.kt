@@ -40,7 +40,8 @@ class EventsViewModel @Inject constructor(
 
     val locationAutofill = mutableStateListOf<AutocompleteResult>()
     lateinit var placesClient: PlacesClient
-    var currLatLong by mutableStateOf(LatLng(0.0, 0.0))
+    var currMapLatLong by mutableStateOf(LatLng(0.0, 0.0))
+    var deviceLocation by mutableStateOf(LatLng(0.0, 0.0))
 
 
     init {
@@ -128,7 +129,9 @@ class EventsViewModel @Inject constructor(
         val request = FetchPlaceRequest.newInstance(result.placeId, placeFields)
         placesClient.fetchPlace(request).addOnSuccessListener {
             if (it != null) {
-                currLatLong = it.place.latLng!!
+                currMapLatLong = it.place.latLng!!
+                lat = currMapLatLong.latitude
+                lng = currMapLatLong.longitude
             }
         }.addOnFailureListener {
             it.printStackTrace()

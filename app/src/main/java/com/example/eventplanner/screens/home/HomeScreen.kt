@@ -112,8 +112,8 @@ fun HomeScreen(
             viewModel.state.eventLocation.forEach {locat ->
                 Marker(
                     position = LatLng(locat.lat, locat.lng),
-                    title = "Title of the event",
-                    snippet = "Long click to create new event",
+                    title = locat.title,
+                    snippet = "Tap to view event details",
                     onInfoWindowLongClick = {
                         viewModel.onEvent(
                             MapEvent.onInfoWindowLongClick(locat)
