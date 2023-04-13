@@ -31,8 +31,8 @@ import com.google.maps.android.compose.*
 @ExperimentalMaterial3Api
 @Composable
 fun HomeScreen(
-    viewModel: MapViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    viewModel: MapViewModel = viewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val uiSettings = remember {

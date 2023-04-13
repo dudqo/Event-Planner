@@ -1,6 +1,8 @@
 package com.example.eventplanner.screens.events
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -8,12 +10,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.eventplanner.domain.model.Event
+import com.google.android.libraries.places.api.Places
 
 @ExperimentalMaterial3Api
 @Composable
@@ -27,6 +32,7 @@ fun EventCreateScreen(
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
     val openDiscardDialog = remember { mutableStateOf(false) }
     val timeState = rememberTimePickerState()
+    viewModel.placesClient = Places.createClient(LocalContext.current)
 
     Scaffold(
         topBar = {
@@ -136,12 +142,39 @@ fun EventCreateScreen(
                     onCheckedChange = { viewModel.onEvent(EventsEvent.OnUseCurrLocationChange(it)) }
                 )
             }
-            TextField(
+            OutlinedTextField(
                 value = viewModel.address,
-                onValueChange = { viewModel.onEvent(EventsEvent.OnAddressChange(it)) },
+                onValueChange = {
+                    viewModel.onEvent(EventsEvent.OnAddressChange(it))
+                    viewModel.searchPlaces(it)
+                },
                 label = { Text(text = "Address") },
                 enabled = viewModel.useCurrLocation.not()
             )
+            AnimatedVisibility(
+                viewModel.locationAutofill.isNotEmpty(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(viewModel.locationAutofill) {
+                        Row(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clickWithRipple {
+                                viewModel.text = it.address
+                                viewModel.locationAutofill.clear()
+                                viewModel.getCoordinates(it)
+                            }) {
+                            Text(it.address)
+                        }
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
 
             Spacer(Modifier.height(30.dp))
 

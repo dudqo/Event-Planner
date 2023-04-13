@@ -1,15 +1,21 @@
 package com.example.eventplanner.screens.events
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import android.annotation.SuppressLint
+import androidx.compose.runtime.*
+import androidx.core.content.ContentProviderCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.eventplanner.AutocompleteResult
 import com.example.eventplanner.MapEvent
 import com.example.eventplanner.domain.model.Event
 import com.example.eventplanner.domain.repository.EventRepository
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +34,12 @@ class EventsViewModel @Inject constructor(
     var isPrivate by mutableStateOf(false)
     var useCurrLocation by mutableStateOf(false)
     var state by mutableStateOf(EventState())
+    private var job: Job? = null
+
+    val locationAutofill = mutableStateListOf<AutocompleteResult>()
+    lateinit var placesClient: PlacesClient
+    var currLatLong by mutableStateOf(LatLng(0.0, 0.0))
+
 
     init {
         viewModelScope.launch {
@@ -64,6 +76,48 @@ class EventsViewModel @Inject constructor(
                     repository.deleteEvent(event.event)
                 }
             }
+        }
+    }
+
+    fun searchPlaces(query: String) {
+        job?.cancel()
+        locationAutofill.clear()
+        job = viewModelScope.launch {
+            val request = FindAutocompletePredictionsRequest
+                .builder()
+                .setQuery(query)
+                .build()
+            placesClient
+                .findAutocompletePredictions(request)
+                .addOnSuccessListener { response ->
+                    locationAutofill += response.autocompletePredictions.map {
+                        AutocompleteResult(
+                            it.getFullText(null).toString(),
+                            it.placeId
+                        )
+                    }
+                }
+                .addOnFailureListener {
+                    it.printStackTrace()
+                    println(it.cause)
+                    println(it.message)
+                }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun getDeviceLocation(
+        fusedLocationProviderClient: FusedLocationProviderClient
+    ) {
+        try {
+            val locationResult = fusedLocationProviderClient.lastLocation
+            locationResult.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    state.lastKnownLocation = task.result
+                }
+            }
+        } catch (e: SecurityException) {
+            // Show error
         }
     }
 }
