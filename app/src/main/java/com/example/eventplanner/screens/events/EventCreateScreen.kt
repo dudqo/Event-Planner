@@ -1,6 +1,7 @@
 package com.example.eventplanner.screens.events
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -160,16 +161,16 @@ fun EventCreateScreen(
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(viewModel.locationAutofill) {
+                    items(viewModel.locationAutofill.size) {
                         Row(modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp)
-                            .clickWithRipple {
-                                viewModel.text = it.address
+                            .clickable {
+                                viewModel.address = viewModel.locationAutofill[it].address
                                 viewModel.locationAutofill.clear()
-                                viewModel.getCoordinates(it)
+                                viewModel.getCoordinates(viewModel.locationAutofill[it])
                             }) {
-                            Text(it.address)
+                            Text(viewModel.locationAutofill[it].address)
                         }
                     }
                 }

@@ -12,6 +12,8 @@ import com.example.eventplanner.domain.repository.EventRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -118,6 +120,18 @@ class EventsViewModel @Inject constructor(
             }
         } catch (e: SecurityException) {
             // Show error
+        }
+    }
+
+    fun getCoordinates(result: AutocompleteResult) {
+        val placeFields = listOf(Place.Field.LAT_LNG)
+        val request = FetchPlaceRequest.newInstance(result.placeId, placeFields)
+        placesClient.fetchPlace(request).addOnSuccessListener {
+            if (it != null) {
+                currLatLong = it.place.latLng!!
+            }
+        }.addOnFailureListener {
+            it.printStackTrace()
         }
     }
 }
