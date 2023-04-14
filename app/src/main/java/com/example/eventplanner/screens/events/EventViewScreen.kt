@@ -14,12 +14,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.eventplanner.graphs.EventScreen
 import com.example.eventplanner.graphs.Graph
 import com.example.eventplanner.screens.home.MapViewModel
 
 @ExperimentalMaterial3Api
 @Composable
 fun EventViewScreen(
+    navController: NavHostController,
     viewModel: EventsViewModel = hiltViewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -52,7 +55,7 @@ fun EventViewScreen(
                     },
                     actions = {
                         TextButton(onClick = {
-                            navController.navigate()
+                            navController.navigate(EventScreen.CreateScreen.route)
                         }) {
                             Text(
                                 text = "Edit"
@@ -78,25 +81,25 @@ fun EventViewScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = event.title,
+                    text = viewModel.title,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
                 Text(
-                    text = event.time,
+                    text = viewModel.time,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
                 Text(
-                    text = event.address,
+                    text = viewModel.address,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp
                 )
                 Text(
-                    text = event.desc,
+                    text = viewModel.desc,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp
