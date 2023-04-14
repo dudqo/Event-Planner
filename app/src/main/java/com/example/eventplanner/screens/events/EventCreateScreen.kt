@@ -1,6 +1,7 @@
 package com.example.eventplanner.screens.events
 
 import android.Manifest
+import android.app.TimePickerDialog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -50,7 +51,7 @@ fun EventCreateScreen(
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
     val openDiscardDialog = remember { mutableStateOf(false) }
-    val openMapDialog = remember { mutableStateOf(false) }
+    val openTimeDialog = remember { mutableStateOf(false) }
     val timeState = rememberTimePickerState()
     viewModel.placesClient = Places.createClient(LocalContext.current)
 
@@ -162,14 +163,14 @@ fun EventCreateScreen(
                     onCheckedChange = { viewModel.onEvent(EventsEvent.OnUseCurrLocationChange(it)) }
                 )
             }
-            Button(
+/*            Button(
                 onClick = {
                     openMapDialog.value = true
                 }
             ) {
                 Text("Select Location")
             }
-/*            if (openMapDialog.value) {
+            if (openMapDialog.value) {
                 Dialog(onDismissRequest = { openMapDialog.value = false }) {
                     GoogleMap(
                         modifier = Modifier
@@ -231,13 +232,14 @@ fun EventCreateScreen(
                     ) {
                         Text("Select Date")
                     }
-/*                TextButton(
-                    onClick = {
-                        openTimeDialog.value = true
+                    Spacer(Modifier.width(10.dp))
+                    Button(
+                        onClick = {
+                            openTimeDialog.value = true
+                        }
+                    ) {
+                        Text("Select Time")
                     }
-                ) {
-                    Text("Select Time")
-                }*/
                 }
                 if (openDateDialog.value) {
 
@@ -272,7 +274,25 @@ fun EventCreateScreen(
                 }
                 Text("Date: ${datePickerState.selectedDateMillis}")
 
-                TimeInput(state = timeState)
+                if (openTimeDialog.value) {
+                    Dialog(
+                        onDismissRequest = { openTimeDialog.value = false },
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            TimePicker(state = timeState)
+                            Button(
+                                onClick = {
+                                    openTimeDialog.value = false
+                                }
+                            ) {
+                                Text("Confirm")
+                            }
+                        }
+                    }
+                }
+                //TimeInput(state = timeState)
 
                 Spacer(Modifier.height(30.dp))
 

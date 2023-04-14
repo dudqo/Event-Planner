@@ -1,6 +1,7 @@
 package com.example.eventplanner.domain.model
 
 data class Event(
+    val id: Int?,
     val title: String,
     val lat: Double,
     val lng: Double,
