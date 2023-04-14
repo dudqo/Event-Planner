@@ -8,6 +8,6 @@ data class MapState(
     var properties: MapProperties = MapProperties(
         isMyLocationEnabled = false
     ),
-    val eventLocation: List<Event> = emptyList(),
+    val events: List<Event> = emptyList(),
     var lastKnownLocation: Location? = null
 )

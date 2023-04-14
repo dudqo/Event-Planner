@@ -53,7 +53,11 @@ fun EventsScreen(
                         modifier = Modifier
                             .padding(horizontal = 8.dp, vertical = 8.dp)
                             .fillMaxWidth()
-                            .clickable { navController.navigate(EventScreen.ViewScreen.route) },
+                            .clickable {
+                                navController.navigate(
+                                    EventScreen.ViewScreen.route +
+                                            "?eventId=${it.id}"
+                                ) },
                     ) {
                         Text(
                             text = it.title,

@@ -4,9 +4,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.example.eventplanner.screens.FriendsScreen
 import com.example.eventplanner.SettingsScreen
 import com.example.eventplanner.screens.events.EventCreateScreen
@@ -43,7 +45,17 @@ fun NavGraphBuilder.eventNavGraph(navController: NavHostController) {
         composable(route = EventScreen.CreateScreen.route) {
             EventCreateScreen(navController)
         }
-        composable(route = EventScreen.ViewScreen.route) {
+        composable(
+            route = EventScreen.ViewScreen.route + "?eventId={eventId}",
+            arguments = listOf(
+                navArgument(
+                    name = "eventId"
+                ) {
+                    type = NavType.IntType
+                    defaultValue = -1
+                }
+            )
+        ) {
             EventViewScreen(navController)
         }
     }

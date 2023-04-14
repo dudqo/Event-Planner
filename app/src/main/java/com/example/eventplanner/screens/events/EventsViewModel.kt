@@ -3,6 +3,7 @@ package com.example.eventplanner.screens.events
 import android.annotation.SuppressLint
 import androidx.compose.runtime.*
 import androidx.core.content.ContentProviderCompat
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.AutocompleteResult
@@ -24,7 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EventsViewModel @Inject constructor(
-    private val repository: EventRepository
+    private val repository: EventRepository,
+    savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     var title by mutableStateOf("")
@@ -51,6 +53,21 @@ class EventsViewModel @Inject constructor(
                 state = state.copy(
                     events = events
                 )
+            }
+        }
+        savedStateHandle.get<Int>("eventId")?.let { eventId ->
+            if(eventId != -1) {
+                viewModelScope.launch {
+                    repository.getEventById(eventId)?.also { event ->
+                        currentEventId = event.id
+                        title = event.title
+                        desc = event.desc
+                        lat = event.lat
+                        lng = event.lng
+                        address = event.address.toString()
+                        time = event.time
+                    }
+                }
             }
         }
     }

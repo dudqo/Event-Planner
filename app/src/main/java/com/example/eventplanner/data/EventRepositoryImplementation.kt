@@ -22,4 +22,8 @@ class EventRepositoryImplementation(
         }
     }
 
+    override suspend fun getEventById(id: Int): Event? {
+        return dao.getEventById(id)
+    }
+
 }
