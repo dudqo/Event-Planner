@@ -58,7 +58,10 @@ fun EventViewScreen(
                     },
                     actions = {
                         TextButton(onClick = {
-                            navController.navigate(EventScreen.CreateScreen.route)
+                            navController.navigate(EventScreen.CreateScreen.route
+                            + "?eventId=${viewModel.currentEventId}") {
+                                popUpTo("events")
+                            }
                         }) {
                             Text(
                                 text = "Edit"

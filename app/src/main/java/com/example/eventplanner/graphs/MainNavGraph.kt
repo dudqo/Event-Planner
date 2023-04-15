@@ -40,9 +40,19 @@ fun MainNavGraph(navController: NavHostController) {
 fun NavGraphBuilder.eventNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.EVENT,
-        startDestination = EventScreen.CreateScreen.route
+        startDestination = EventScreen.CreateScreen.route + "?eventId={eventId}"
     ) {
-        composable(route = EventScreen.CreateScreen.route) {
+        composable(
+            route = EventScreen.CreateScreen.route + "?eventId={eventId}",
+            arguments = listOf(
+                navArgument(
+                    name = "eventId"
+                ) {
+                    type = NavType.IntType
+                    defaultValue = -1
+                }
+            )
+        ) {
             EventCreateScreen(navController)
         }
         composable(

@@ -37,7 +37,7 @@ class EventsViewModel @Inject constructor(
     var time by mutableStateOf("")
     var isPrivate by mutableStateOf(false)
     var useCurrLocation by mutableStateOf(false)
-    private var currentEventId: Int? = null
+    var currentEventId: Int? = null
     var state by mutableStateOf(EventState())
     private var job: Job? = null
 
