@@ -2,15 +2,15 @@ package com.example.eventplanner.screens.events
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.*
-import androidx.core.content.ContentProviderCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.AutocompleteResult
-import com.example.eventplanner.MapEvent
 import com.example.eventplanner.domain.model.Event
 import com.example.eventplanner.domain.repository.EventRepository
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalPermissionsApi::class)
 @HiltViewModel
 class EventsViewModel @Inject constructor(
     private val repository: EventRepository,
@@ -40,6 +41,8 @@ class EventsViewModel @Inject constructor(
     var currentEventId: Int? = null
     var state by mutableStateOf(EventState())
     private var job: Job? = null
+    lateinit var currEvent: Event
+    lateinit var fusedLocationClient: FusedLocationProviderClient
 
     val locationAutofill = mutableStateListOf<AutocompleteResult>()
     lateinit var placesClient: PlacesClient
@@ -59,6 +62,7 @@ class EventsViewModel @Inject constructor(
             if(eventId != -1) {
                 viewModelScope.launch {
                     repository.getEventById(eventId)?.also { event ->
+                        currEvent = event
                         currentEventId = event.id
                         title = event.title
                         desc = event.desc
@@ -84,6 +88,8 @@ class EventsViewModel @Inject constructor(
             }
             is EventsEvent.OnUseCurrLocationChange -> {
                 useCurrLocation = event.newUseCurrLocation
+                getDeviceLocation()
+
             }
             is EventsEvent.OnCreateEventClick -> {
                 viewModelScope.launch {
@@ -127,19 +133,15 @@ class EventsViewModel @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    fun getDeviceLocation(
-        fusedLocationProviderClient: FusedLocationProviderClient
-    ) {
-        try {
-            val locationResult = fusedLocationProviderClient.lastLocation
-            locationResult.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    state.lastKnownLocation = task.result
-                }
+    fun getDeviceLocation() {
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener {
+                state = state.copy(
+                    lastKnownLocation = it
+                )
+                lat = it.latitude
+                lng = it.longitude
             }
-        } catch (e: SecurityException) {
-            // Show error
-        }
     }
 
     fun getCoordinates(result: AutocompleteResult) {

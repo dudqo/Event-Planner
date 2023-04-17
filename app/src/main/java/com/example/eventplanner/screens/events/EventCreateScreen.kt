@@ -2,6 +2,7 @@ package com.example.eventplanner.screens.events
 
 import android.Manifest
 import android.app.TimePickerDialog
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,7 +26,9 @@ import androidx.navigation.NavHostController
 import com.example.eventplanner.MapEvent
 import com.example.eventplanner.domain.model.Event
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -47,13 +50,54 @@ fun EventCreateScreen(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
+
     val openDateDialog = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
     val openDiscardDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
+    val openWarningDialog = remember { mutableStateOf(false) }
     val timeState = rememberTimePickerState()
     viewModel.placesClient = Places.createClient(LocalContext.current)
+    viewModel.fusedLocationClient =
+        LocationServices.getFusedLocationProviderClient(LocalContext.current)
+    
+    BackHandler {
+        openWarningDialog.value = true
+    }
+    if (openWarningDialog.value) {
+        AlertDialog(
+            onDismissRequest = { openWarningDialog.value = false },
+            title = {
+                Text(text = "Exit without saving?")
+            },
+            text = {
+                Text(
+                    "All unsaved changes will be lost"
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        openWarningDialog.value = false
+                        navController.popBackStack()
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openWarningDialog.value = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -81,7 +125,7 @@ fun EventCreateScreen(
                         navController.popBackStack()
                     }) {
                         Text(
-                            text = "Create"
+                            text = "Save"
                         )
 
                     }
@@ -155,12 +199,16 @@ fun EventCreateScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Use current location",
+                    text = if (locationPermissionState.status.isGranted)
+                        "Use current location" else
+                            "Use current location (not available)",
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Checkbox(
                     checked = viewModel.useCurrLocation,
-                    onCheckedChange = { viewModel.onEvent(EventsEvent.OnUseCurrLocationChange(it)) }
+                    onCheckedChange = { viewModel.onEvent(EventsEvent.OnUseCurrLocationChange(it)) },
+                    enabled = locationPermissionState.status.isGranted
+
                 )
             }
 /*            Button(

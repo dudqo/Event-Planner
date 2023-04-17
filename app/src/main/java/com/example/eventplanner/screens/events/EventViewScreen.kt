@@ -16,11 +16,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.eventplanner.graphs.EventScreen
-import com.example.eventplanner.graphs.Graph
-import com.example.eventplanner.screens.home.MapViewModel
+
 
 @ExperimentalMaterial3Api
 @Composable
@@ -82,6 +80,36 @@ fun EventViewScreen(
 
             }
         ) {
+            if (openDeleteDialog.value) {
+                AlertDialog(
+                    onDismissRequest = { openDeleteDialog.value = false },
+                    title = {
+                        Text(text = "Delete this event?")
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                openDeleteDialog.value = false
+                                navController.popBackStack()
+                                viewModel.onEvent(EventsEvent.OnDeleteEventClick(viewModel.currEvent))
+                            }
+                        ) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                openDeleteDialog.value = false
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
+                    }
+
+                )
+            }
+
             Column(
                 modifier = Modifier.padding(it),
                 horizontalAlignment = Alignment.CenterHorizontally,

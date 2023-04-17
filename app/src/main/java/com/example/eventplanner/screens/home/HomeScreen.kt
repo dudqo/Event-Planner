@@ -6,12 +6,15 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -22,6 +25,9 @@ import com.example.eventplanner.screens.events.EventsScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 
@@ -32,7 +38,7 @@ import com.google.maps.android.compose.*
 @Composable
 fun HomeScreen(
     navController: NavHostController = rememberNavController(),
-    viewModel: MapViewModel = viewModel()
+    viewModel: MapViewModel = hiltViewModel()
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
     val uiSettings = remember {
@@ -42,7 +48,29 @@ fun HomeScreen(
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-    viewModel.state.properties = MapProperties(isMyLocationEnabled = locationPermissionState.status.isGranted)
+    viewModel.state.properties = viewModel.state.properties.copy(
+        isMyLocationEnabled = locationPermissionState.status.isGranted
+    )
+    viewModel.fusedLocationClient =
+        LocationServices.getFusedLocationProviderClient(LocalContext.current)
+
+    LaunchedEffect(Unit) {
+        if (locationPermissionState.status.isGranted) {
+            viewModel.getDeviceLocation()
+        }
+        if (viewModel.state.lastKnownLocation != null) {
+            cameraPositionState.animate(
+                CameraUpdateFactory.newCameraPosition(
+                    CameraPosition.fromLatLngZoom(
+                        LatLng(
+                            viewModel.state.lastKnownLocation!!.latitude,
+                            viewModel.state.lastKnownLocation!!.longitude
+                        ), 10f
+                    )
+                )
+            )
+        }
+    }
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -95,7 +123,7 @@ fun HomeScreen(
             }
 
         ) {
-            if (viewModel.longPressed) {
+/*            if (viewModel.longPressed) {
                 Marker(
                     position = LatLng(viewModel.lat, viewModel.lng),
                     title = "CREATE NEW EVENT",
@@ -106,19 +134,21 @@ fun HomeScreen(
                     }
 
                 )
-            }
+            }*/
 
 
             viewModel.state.events.forEach {
-                Marker(
-                    position = LatLng(it.lat, it.lng),
-                    title = it.title,
-                    snippet = "Tap to view event details",
-                    onInfoWindowLongClick = {
+                if (!(it.lat == 0.00 && it.lng == 0.00 && it.address == "")) {
+                    Marker(
+                        position = LatLng(it.lat, it.lng),
+                        title = it.title,
+                        snippet = "Tap to view event details",
+                        onInfoWindowClick = {
 
-                    }
+                        }
 
-                )
+                    )
+                }
             }
         }
     }
