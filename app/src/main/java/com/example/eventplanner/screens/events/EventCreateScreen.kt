@@ -2,6 +2,7 @@ package com.example.eventplanner.screens.events
 
 import android.Manifest
 import android.app.TimePickerDialog
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -34,6 +35,10 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPermissionsApi::class)
 @ExperimentalMaterial3Api
@@ -50,7 +55,7 @@ fun EventCreateScreen(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
 
-
+    val context = LocalContext.current
     val openDateDialog = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
@@ -58,9 +63,10 @@ fun EventCreateScreen(
     val openTimeDialog = remember { mutableStateOf(false) }
     val openWarningDialog = remember { mutableStateOf(false) }
     val timeState = rememberTimePickerState()
-    viewModel.placesClient = Places.createClient(LocalContext.current)
+    val dateFormat = SimpleDateFormat("MMM d, yyyyy", Locale.US)
+    viewModel.placesClient = Places.createClient(context)
     viewModel.fusedLocationClient =
-        LocationServices.getFusedLocationProviderClient(LocalContext.current)
+        LocationServices.getFusedLocationProviderClient(context)
     
     BackHandler {
         openWarningDialog.value = true
@@ -119,10 +125,14 @@ fun EventCreateScreen(
 
                     }
                     TextButton(onClick = {
-                        viewModel.onEvent(
-                            EventsEvent.OnCreateEventClick
-                        )
-                        navController.popBackStack()
+                        if (viewModel.title == "") {
+                            Toast.makeText(context, "Title is required to create an event", Toast.LENGTH_SHORT).show()
+                        } else {
+                            viewModel.onEvent(
+                                EventsEvent.OnCreateEventClick
+                            )
+                            navController.popBackStack()
+                        }
                     }) {
                         Text(
                             text = "Save"
@@ -315,12 +325,19 @@ fun EventCreateScreen(
                             }
                         }
                     ) {
-                        DatePicker(state = datePickerState)
+                        DatePicker(
+                            state = datePickerState
+                        )
                     }
 
 
                 }
-                Text("Date: ${datePickerState.selectedDateMillis}")
+                if( datePickerState.selectedDateMillis == null) {
+                    Text("Date not selected")
+                } else {
+                    viewModel.timeInMillis = datePickerState.selectedDateMillis!!
+                    Text("Date: ${SimpleDateFormat("EEEE, MMM d, yyyy", Locale.US).format(datePickerState.selectedDateMillis)}")
+                }
 
                 if (openTimeDialog.value) {
                     Dialog(
@@ -341,6 +358,9 @@ fun EventCreateScreen(
                     }
                 }
                 //TimeInput(state = timeState)
+                viewModel.timeInMillis += TimeUnit.HOURS.toMillis((timeState.hour + 4).toLong()) +
+                        TimeUnit.MINUTES.toMillis(timeState.minute.toLong())
+            Text("Date: ${SimpleDateFormat("EEEE, MMM d, yyyy hh:mm aaa", Locale.US).format(viewModel.timeInMillis)}")
 
                 Spacer(Modifier.height(30.dp))
 

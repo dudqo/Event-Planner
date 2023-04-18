@@ -44,7 +44,7 @@ fun HomeScreen(
     val uiSettings = remember {
         MapUiSettings(zoomControlsEnabled = true)
     }
-    val cameraPositionState = rememberCameraPositionState()
+    var cameraPositionState = rememberCameraPositionState()
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
@@ -54,7 +54,7 @@ fun HomeScreen(
     viewModel.fusedLocationClient =
         LocationServices.getFusedLocationProviderClient(LocalContext.current)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(viewModel.state.lastKnownLocation) {
         if (locationPermissionState.status.isGranted) {
             viewModel.getDeviceLocation()
         }
@@ -63,9 +63,9 @@ fun HomeScreen(
                 CameraUpdateFactory.newCameraPosition(
                     CameraPosition.fromLatLngZoom(
                         LatLng(
-                            viewModel.state.lastKnownLocation!!.latitude,
-                            viewModel.state.lastKnownLocation!!.longitude
-                        ), 10f
+                            viewModel.lat,
+                            viewModel.lng
+                        ), 13f
                     )
                 )
             )

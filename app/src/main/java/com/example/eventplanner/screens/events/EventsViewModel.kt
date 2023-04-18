@@ -1,6 +1,7 @@
 package com.example.eventplanner.screens.events
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -36,6 +37,7 @@ class EventsViewModel @Inject constructor(
     var address by mutableStateOf("")
     var desc by mutableStateOf("")
     var time by mutableStateOf("")
+    var timeInMillis by mutableStateOf(0L)
     var isPrivate by mutableStateOf(false)
     var useCurrLocation by mutableStateOf(false)
     var currentEventId: Int? = null
@@ -47,7 +49,6 @@ class EventsViewModel @Inject constructor(
     val locationAutofill = mutableStateListOf<AutocompleteResult>()
     lateinit var placesClient: PlacesClient
     var currMapLatLong by mutableStateOf(LatLng(0.0, 0.0))
-    var deviceLocation by mutableStateOf(LatLng(0.0, 0.0))
 
 
     init {

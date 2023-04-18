@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.MapEvent
 import com.example.eventplanner.domain.repository.EventRepository
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Priority
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -19,7 +20,6 @@ import javax.inject.Inject
 @HiltViewModel
 class MapViewModel @Inject constructor(
     private val repository: EventRepository,
-    savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     var state by mutableStateOf(MapState())
@@ -58,18 +58,14 @@ class MapViewModel @Inject constructor(
 
     @SuppressLint("MissingPermission")
     fun getDeviceLocation() {
-        try {
-            val locationResult = fusedLocationClient.lastLocation
-            locationResult.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    state = state.copy(
-                        lastKnownLocation = task.result
-                    )
-                }
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener {
+                state = state.copy(
+                    lastKnownLocation = it
+                )
+                lat = it.latitude
+                lng = it.longitude
             }
-        } catch (e: SecurityException) {
-            // Show error
-        }
     }
 
 }
