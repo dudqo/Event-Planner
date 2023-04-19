@@ -2,6 +2,8 @@ package com.example.eventplanner.screens.events
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -119,25 +121,49 @@ fun EventViewScreen(
                     text = viewModel.title,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 50.sp
                 )
+                Spacer(Modifier.height(15.dp))
+                Divider()
+                Text(
+                    text = "Time",
+                    textAlign = TextAlign.Left,
+                    fontSize = 15.sp
+                )
+                Spacer(Modifier.height(15.dp))
                 Text(
                     text = viewModel.time,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                    fontSize = 25.sp
                 )
+                Spacer(Modifier.height(15.dp))
+                Divider()
+                Text(
+                    text = "Location",
+                    textAlign = TextAlign.Left,
+                    fontSize = 15.sp
+                )
+                Spacer(Modifier.height(15.dp))
                 Text(
                     text = viewModel.address,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+                Spacer(Modifier.height(15.dp))
+                Divider()
+                Text(
+                    text = "Description",
+                    textAlign = TextAlign.Left,
                     fontSize = 15.sp
                 )
+                Spacer(Modifier.height(15.dp))
                 Text(
                     text = viewModel.desc,
                     textAlign = TextAlign.Left,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 10.sp
+                    fontSize = 15.sp
                 )
             }
 

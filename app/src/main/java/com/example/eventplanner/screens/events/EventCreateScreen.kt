@@ -59,6 +59,7 @@ fun EventCreateScreen(
     val openDateDialog = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
+    val dateConfirmed = remember { mutableStateOf(false) }
     val openDiscardDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
     val openWarningDialog = remember { mutableStateOf(false) }
@@ -244,123 +245,144 @@ fun EventCreateScreen(
                 }
 
             }*/
-                OutlinedTextField(
-                    value = viewModel.address,
-                    onValueChange = {
-                        viewModel.onEvent(EventsEvent.OnAddressChange(it))
-                        viewModel.searchPlaces(it)
+            OutlinedTextField(
+                value = viewModel.address,
+                onValueChange = {
+                    viewModel.onEvent(EventsEvent.OnAddressChange(it))
+                    viewModel.searchPlaces(it)
+                },
+                label = { Text(text = "Address") },
+                enabled = viewModel.useCurrLocation.not()
+            )
+            Column() {
+                AnimatedVisibility(
+                    viewModel.locationAutofill.isNotEmpty(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(viewModel.locationAutofill) {
+                            Row(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .clickable {
+                                    viewModel.address = it.address
+                                    viewModel.locationAutofill.clear()
+                                    viewModel.getCoordinates(it)
+                                }) {
+                                Text(it.address)
+                            }
+                        }
+                    }
+                    Spacer(Modifier.height(16.dp))
+                }
+            }
+
+            Spacer(Modifier.height(30.dp))
+
+            Row() {
+                Button(
+                    onClick = {
+                        openDateDialog.value = true
+                    }
+                ) {
+                    Text("Select date and time")
+                }
+                Spacer(Modifier.width(10.dp))
+                /*                    Button(
+                                        onClick = {
+                                            openTimeDialog.value = true
+                                        }
+                                    ) {
+                                        Text("Select Time")
+                                    }*/
+            }
+            if (openDateDialog.value) {
+
+                DatePickerDialog(
+                    onDismissRequest = {
+                        openDateDialog.value = false
                     },
-                    label = { Text(text = "Address") },
-                    enabled = viewModel.useCurrLocation.not()
-                )
-                Column() {
-                    AnimatedVisibility(
-                        viewModel.locationAutofill.isNotEmpty(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                openDateDialog.value = false
+                                openTimeDialog.value = true
+                                viewModel.timeInMillis = datePickerState.selectedDateMillis!! + TimeUnit.HOURS.toMillis(4)
+                            },
+                            enabled = confirmEnabled.value
                         ) {
-                            items(viewModel.locationAutofill) {
-                                Row(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                                    .clickable {
-                                        viewModel.address = it.address
-                                        viewModel.locationAutofill.clear()
-                                        viewModel.getCoordinates(it)
-                                    }) {
-                                    Text(it.address)
-                                }
-                            }
+                            Text("Confirm")
                         }
-                        Spacer(Modifier.height(16.dp))
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                openDateDialog.value = false
+                            }
+                        ) {
+                            Text("Cancel")
+                        }
                     }
+                ) {
+                    DatePicker(
+                        state = datePickerState
+                    )
                 }
 
-                Spacer(Modifier.height(30.dp))
 
-                Row() {
-                    Button(
-                        onClick = {
-                            openDateDialog.value = true
-                        }
+            }
+
+            if (openTimeDialog.value) {
+                Dialog(
+                    onDismissRequest = { openTimeDialog.value = false },
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Select Date")
-                    }
-                    Spacer(Modifier.width(10.dp))
-                    Button(
-                        onClick = {
-                            openTimeDialog.value = true
+                        TimePicker(state = timeState)
+                        Button(
+                            onClick = {
+                                openTimeDialog.value = false
+                            }
+                        ) {
+                            Text("Confirm")
                         }
-                    ) {
-                        Text("Select Time")
                     }
                 }
-                if (openDateDialog.value) {
-
-                    DatePickerDialog(
-                        onDismissRequest = {
-                            openDateDialog.value = false
-                        },
-                        confirmButton = {
-                            TextButton(
-                                onClick = {
-                                    openDateDialog.value = false
-                                },
-                                enabled = confirmEnabled.value
-                            ) {
-                                Text("Confirm")
-                            }
-                        },
-                        dismissButton = {
-                            TextButton(
-                                onClick = {
-                                    openDateDialog.value = false
-                                }
-                            ) {
-                                Text("Cancel")
-                            }
-                        }
-                    ) {
-                        DatePicker(
-                            state = datePickerState
-                        )
-                    }
-
-
-                }
-                if( datePickerState.selectedDateMillis == null) {
-                    Text("Date not selected")
+            }
+            //TimeInput(state = timeState)
+            if (viewModel.timeInMillis == 0L) {
+                Text("Date not selected")
+            } else {
+                if (timeState.hour == 0 && timeState.minute == 0) {
+                    viewModel.time = SimpleDateFormat(
+                        "EEEE, MMM d, yyyy",
+                        Locale.US
+                    ).format(viewModel.timeInMillis)
+/*                    if (timeState.hour > 11) {
+                        viewModel.time += " ${timeState.hour - 11}:${timeState.minute} PM"
+                    } else if (timeState.hour in 1..11) {
+                        viewModel.time += " ${timeState.hour}:${timeState.minute} AM"
+                    } else {
+                        viewModel.time += " 12:${timeState.minute} AM"
+                    }*/
                 } else {
-                    viewModel.timeInMillis = datePickerState.selectedDateMillis!!
-                    Text("Date: ${SimpleDateFormat("EEEE, MMM d, yyyy", Locale.US).format(datePickerState.selectedDateMillis)}")
+/*                    viewModel.timeInMillis += TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
+                            TimeUnit.MINUTES.toMillis(timeState.minute.toLong())*/
+                    viewModel.time = SimpleDateFormat(
+                        "EEEE, MMM d, yyyy hh:mm aaa",
+                        Locale.US
+                    ).format(viewModel.timeInMillis + TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
+                            TimeUnit.MINUTES.toMillis(timeState.minute.toLong()))
                 }
+                Text("Date: ${viewModel.time}")
+            }
 
-                if (openTimeDialog.value) {
-                    Dialog(
-                        onDismissRequest = { openTimeDialog.value = false },
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            TimePicker(state = timeState)
-                            Button(
-                                onClick = {
-                                    openTimeDialog.value = false
-                                }
-                            ) {
-                                Text("Confirm")
-                            }
-                        }
-                    }
-                }
-                //TimeInput(state = timeState)
-                viewModel.timeInMillis += TimeUnit.HOURS.toMillis((timeState.hour + 4).toLong()) +
-                        TimeUnit.MINUTES.toMillis(timeState.minute.toLong())
-            Text("Date: ${SimpleDateFormat("EEEE, MMM d, yyyy hh:mm aaa", Locale.US).format(viewModel.timeInMillis)}")
+
 
                 Spacer(Modifier.height(30.dp))
 
