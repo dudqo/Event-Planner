@@ -1,6 +1,7 @@
 package com.dudqo.eventplanner.screens.events
 
 import android.annotation.SuppressLint
+import android.location.Geocoder
 import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -43,6 +44,7 @@ class EventsViewModel @Inject constructor(
     private var job: Job? = null
     lateinit var currEvent: Event
     lateinit var fusedLocationClient: FusedLocationProviderClient
+    lateinit var geoCoder: Geocoder
 
     val locationAutofill = mutableStateListOf<AutocompleteResult>()
     lateinit var placesClient: PlacesClient
@@ -87,7 +89,16 @@ class EventsViewModel @Inject constructor(
             }
             is EventsEvent.OnUseCurrLocationChange -> {
                 useCurrLocation = event.newUseCurrLocation
-                getDeviceLocation()
+                if (useCurrLocation) {
+                    address = ""
+                    getDeviceLocation()
+                    getAddress(
+                        LatLng(
+                            state.lastKnownLocation!!.latitude,
+                            state.lastKnownLocation!!.longitude
+                        )
+                    )
+                }
 
             }
             is EventsEvent.OnCreateEventClick -> {
@@ -154,6 +165,13 @@ class EventsViewModel @Inject constructor(
             }
         }.addOnFailureListener {
             it.printStackTrace()
+        }
+    }
+
+    fun getAddress(latLng: LatLng) {
+        viewModelScope.launch {
+            val geocodeAddress = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+            address = geocodeAddress?.get(0)?.getAddressLine(0).toString()
         }
     }
 }

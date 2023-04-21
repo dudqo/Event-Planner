@@ -1,6 +1,7 @@
 package com.dudqo.eventplanner.screens.events
 
 import android.Manifest
+import android.location.Geocoder
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,9 +60,15 @@ fun EventCreateScreen(
     viewModel.placesClient = Places.createClient(context)
     viewModel.fusedLocationClient =
         LocationServices.getFusedLocationProviderClient(context)
+    viewModel.geoCoder = Geocoder(context)
     
     BackHandler {
         openWarningDialog.value = true
+    }
+    LaunchedEffect(Unit) {
+        if (locationPermissionState.status.isGranted) {
+            viewModel.getDeviceLocation()
+        }
     }
     if (openWarningDialog.value) {
         AlertDialog(
@@ -246,7 +254,7 @@ fun EventCreateScreen(
             )
             Column() {
                 AnimatedVisibility(
-                    viewModel.locationAutofill.isNotEmpty(),
+                    visible = viewModel.locationAutofill.isNotEmpty() && !viewModel.useCurrLocation,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)

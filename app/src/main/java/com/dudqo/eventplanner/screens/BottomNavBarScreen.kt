@@ -42,7 +42,7 @@ fun BottomNavBarScreen(
                         icon_default = Icons.Outlined.List,
                         icon_selected = Icons.Filled.List
                     ),
-                    BottomNavItem(
+/*                    BottomNavItem(
                         name = "Friends",
                         route = "friends",
                         icon_default = Icons.Outlined.Person,
@@ -53,7 +53,7 @@ fun BottomNavBarScreen(
                         route = "settings",
                         icon_default = Icons.Outlined.Settings,
                         icon_selected = Icons.Filled.Settings
-                    ),
+                    ),*/
                 ),
                 navController = navController,
                 onItemClick = {

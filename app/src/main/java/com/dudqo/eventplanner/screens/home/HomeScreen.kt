@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dudqo.eventplanner.MapEvent
+import com.dudqo.eventplanner.graphs.EventScreen
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -25,10 +26,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
-
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, DelicateCoroutinesApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun HomeScreen(
@@ -39,7 +43,7 @@ fun HomeScreen(
     val uiSettings = remember {
         MapUiSettings(zoomControlsEnabled = true)
     }
-    var cameraPositionState = rememberCameraPositionState()
+    val cameraPositionState = rememberCameraPositionState()
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
@@ -67,7 +71,7 @@ fun HomeScreen(
         }
     }
 
-    BottomSheetScaffold(
+    /*BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetShadowElevation = 20.dp,
         sheetPeekHeight = 85.dp,
@@ -102,7 +106,8 @@ fun HomeScreen(
                     }
                 }
             }
-        }
+        }*/
+    Scaffold(
     ) {
         GoogleMap(
             modifier = Modifier
@@ -138,8 +143,13 @@ fun HomeScreen(
                         position = LatLng(it.lat, it.lng),
                         title = it.title,
                         snippet = "Tap to view event details",
-                        onInfoWindowClick = {
-
+                        onInfoWindowClick = {marker ->
+                            GlobalScope.launch(Dispatchers.Main) {
+                                navController.navigate(
+                                    EventScreen.ViewScreen.route +
+                                            "?eventId=${it.id}"
+                                )
+                            }
                         }
 
                     )
