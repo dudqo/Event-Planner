@@ -71,7 +71,7 @@ fun HomeScreen(
         }
     }
 
-    /*BottomSheetScaffold(
+    BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetShadowElevation = 20.dp,
         sheetPeekHeight = 85.dp,
@@ -106,8 +106,7 @@ fun HomeScreen(
                     }
                 }
             }
-        }*/
-    Scaffold(
+        }
     ) {
         GoogleMap(
             modifier = Modifier

@@ -7,11 +7,22 @@ plugins {
     id 'dagger.hilt.android.plugin'
 }
 
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
 android {
+    signingConfigs {
+        release {
+            storeFile file(localProperties.getProperty('store_file'))
+            storePassword localProperties.getProperty('store_password')
+            keyAlias "EventPlanner"
+            keyPassword localProperties.getProperty('key_password')
+        }
+    }
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.dudqo.eventplanner"
+        applicationId "com.example.eventplanner"
         minSdk 21
         targetSdk 33
         versionCode 1
@@ -21,6 +32,7 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        signingConfig signingConfigs.release
 
     }
 
@@ -28,6 +40,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        beta {
+            versionNameSuffix "-beta"
+        }
+        debug {
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
