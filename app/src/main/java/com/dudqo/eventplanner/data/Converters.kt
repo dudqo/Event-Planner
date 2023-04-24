@@ -9,16 +9,16 @@ import com.google.gson.reflect.TypeToken
 class Converters {
 
     @TypeConverter
-    fun fromUriList(value: List<Uri>): String {
+    fun fromUriList(value: List<String>): String {
         return Gson().toJson(value)
     }
 
     @TypeConverter
-    fun toUriList(value: String): List<Uri> {
+    fun toUriList(value: String): List<String> {
         return try {
             Gson().fromJson(
                 value,
-                object : TypeToken<List<Uri>>() {}.type)
+                object : TypeToken<List<String>>() {}.type)
         } catch (e: Exception) {
             emptyList()
         }

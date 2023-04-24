@@ -47,7 +47,7 @@ class EventsViewModel @Inject constructor(
     var useCurrLocation by mutableStateOf(false)
     var currentEventId: Int? = null
     var state by mutableStateOf(EventState())
-    var selectedImages by mutableStateOf<List<Uri>>(emptyList())
+    var selectedImages by mutableStateOf<List<String>>(emptyList())
     var imagesBitmap by mutableStateOf<List<Bitmap>>(emptyList())
     private var job: Job? = null
     lateinit var currEvent: Event
@@ -79,6 +79,7 @@ class EventsViewModel @Inject constructor(
                         lng = event.lng
                         address = event.address.toString()
                         time = event.time
+                        selectedImages = event.images
                     }
                 }
             }

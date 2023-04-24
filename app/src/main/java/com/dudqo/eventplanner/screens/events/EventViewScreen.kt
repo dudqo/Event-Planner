@@ -1,5 +1,6 @@
 package com.dudqo.eventplanner.screens.events
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -120,15 +121,18 @@ fun EventViewScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                LazyRow() {
-                    items(viewModel.selectedImages) {
-                        Card(
-                            modifier = Modifier.fillMaxWidth().height(400.dp)
-                        ) {
-                            AsyncImage(model = it, contentDescription = null)
+                if (viewModel.selectedImages.isNotEmpty()) {
+                    LazyRow() {
+                        items(viewModel.selectedImages) {
+                            Card(
+                                modifier = Modifier.fillMaxWidth().height(400.dp)
+                            ) {
+                                AsyncImage(model = Uri.parse(it), contentDescription = null)
+                            }
                         }
                     }
                 }
+                //AsyncImage(model = Uri.parse(viewModel.selectedImages[0]), contentDescription = null)
                 Text(
                     text = viewModel.title,
                     textAlign = TextAlign.Left,

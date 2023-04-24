@@ -12,5 +12,5 @@ data class Event(
     val desc: String,
     val time: String,
     val isPrivate: Boolean = true,
-    val images: List<Uri>
+    val images: List<String>
 )

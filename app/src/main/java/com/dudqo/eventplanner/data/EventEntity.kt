@@ -17,5 +17,5 @@ data class EventEntity(
     val time: String,
     val isPrivate: Boolean = true,
     @ColumnInfo(name = "images", defaultValue = "")
-    val images: List<Uri>
+    val images: List<String>
 )

@@ -1,6 +1,10 @@
 package com.dudqo.eventplanner.screens.events
 
 import android.Manifest
+import android.content.Context.MODE_PRIVATE
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.location.Geocoder
 import android.net.Uri
@@ -36,6 +40,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -47,6 +53,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Collections.addAll
 import java.util.Locale
@@ -84,7 +92,24 @@ fun EventCreateScreen(
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = {
-            viewModel.selectedImages = it
+            val savedUris = mutableListOf<Uri>()
+            for (uri in it) {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                val bitmap = BitmapFactory.decodeStream(inputStream)
+                //inputStream?.close()
+
+                val filename = "${System.currentTimeMillis()}.jpg"
+                context.openFileOutput(filename, MODE_PRIVATE).use {stream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                }
+
+
+                val file = File(context.filesDir, filename)
+                savedUris.add(Uri.fromFile(file))
+            }
+            viewModel.selectedImages = savedUris.map {uri ->
+                uri.toString()
+            }
         })
     viewModel.placesClient = Places.createClient(context)
     viewModel.fusedLocationClient =
@@ -160,6 +185,15 @@ fun EventCreateScreen(
                         if (viewModel.title == "") {
                             Toast.makeText(context, "Title is required to create an event", Toast.LENGTH_SHORT).show()
                         } else {
+/*                            viewModel.selectedImages.map {
+                                val input = context.contentResolver.openInputStream(it)
+                                val outputFile =
+                                    context.filesDir.resolve("${it.path.toString()}.jpg")
+                                input?.copyTo(outputFile.outputStream())
+                                input?.close()
+                                outputFile.toUri()
+                            }*/
+
                             viewModel.onEvent(
                                 EventsEvent.OnCreateEventClick
                             )
