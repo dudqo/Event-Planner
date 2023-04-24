@@ -1,7 +1,13 @@
 package com.dudqo.eventplanner.screens.events
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.location.Geocoder
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -41,6 +47,8 @@ class EventsViewModel @Inject constructor(
     var useCurrLocation by mutableStateOf(false)
     var currentEventId: Int? = null
     var state by mutableStateOf(EventState())
+    var selectedImages by mutableStateOf<List<Uri>>(emptyList())
+    var imagesBitmap by mutableStateOf<List<Bitmap>>(emptyList())
     private var job: Job? = null
     lateinit var currEvent: Event
     lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -103,9 +111,39 @@ class EventsViewModel @Inject constructor(
             }
             is EventsEvent.OnCreateEventClick -> {
                 viewModelScope.launch {
-                    repository.insertEvent(
-                        Event(currentEventId, title, lat, lng, address, desc, time, isPrivate)
-                    )
+/*                    for (uri in selectedImages) {
+                        val source = ImageDecoder.createSource(requireActivity().contentResolver, imageUri)
+                        imagesBitmap.add(ImageDecoder.decodeBitmap(source))
+                    }*/
+                    if (useCurrLocation) {
+                        repository.insertEvent(
+                            Event(
+                                currentEventId,
+                                title,
+                                state.lastKnownLocation!!.latitude,
+                                state.lastKnownLocation!!.longitude,
+                                address,
+                                desc,
+                                time,
+                                isPrivate,
+                                selectedImages
+                            )
+                        )
+                    } else {
+                        repository.insertEvent(
+                            Event(
+                                currentEventId,
+                                title,
+                                lat,
+                                lng,
+                                address,
+                                desc,
+                                time,
+                                isPrivate,
+                                selectedImages
+                            )
+                        )
+                    }
                 }
             }
             is EventsEvent.OnDeleteEventClick -> {
@@ -149,8 +187,6 @@ class EventsViewModel @Inject constructor(
                 state = state.copy(
                     lastKnownLocation = it
                 )
-                lat = it.latitude
-                lng = it.longitude
             }
     }
 

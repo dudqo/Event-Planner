@@ -9,6 +9,5 @@ sealed class EventsEvent {
     data class OnDescChange(val newDesc: String): EventsEvent()
     data class OnUseCurrLocationChange(val newUseCurrLocation: Boolean): EventsEvent()
     data class OnDeleteEventClick(val event: Event): EventsEvent()
-
     object OnCreateEventClick: EventsEvent()
 }

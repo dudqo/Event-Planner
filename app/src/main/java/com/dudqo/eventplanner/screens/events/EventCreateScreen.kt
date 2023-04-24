@@ -1,20 +1,35 @@
 package com.dudqo.eventplanner.screens.events
 
 import android.Manifest
+import android.graphics.ImageDecoder
 import android.location.Geocoder
+import android.net.Uri
+import android.os.Build
+import android.text.method.TextKeyListener.clear
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,18 +38,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.text.SimpleDateFormat
+import java.util.Collections.addAll
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalLayoutApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun EventCreateScreen(
@@ -48,6 +66,12 @@ fun EventCreateScreen(
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
+    val multipleStoragePermissionsState = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    )
 
     val context = LocalContext.current
     val openDateDialog = remember { mutableStateOf(false) }
@@ -57,11 +81,20 @@ fun EventCreateScreen(
     val openTimeDialog = remember { mutableStateOf(false) }
     val openWarningDialog = remember { mutableStateOf(false) }
     val timeState = rememberTimePickerState()
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = {
+            viewModel.selectedImages = it
+        })
     viewModel.placesClient = Places.createClient(context)
     viewModel.fusedLocationClient =
         LocationServices.getFusedLocationProviderClient(context)
     viewModel.geoCoder = Geocoder(context)
-    
+
+/*    viewModel.imagesBitmap = viewModel.selectedImages.map {
+        ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, it))
+    }*/
+
     BackHandler {
         openWarningDialog.value = true
     }
@@ -180,6 +213,7 @@ fun EventCreateScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(it),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -260,6 +294,7 @@ fun EventCreateScreen(
                         .padding(8.dp)
                 ) {
                     LazyColumn(
+                        modifier = Modifier.height(200.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(viewModel.locationAutofill) {
@@ -380,19 +415,48 @@ fun EventCreateScreen(
                 Text("Date: ${viewModel.time}")
             }
 
+            Spacer(Modifier.height(30.dp))
 
-
-                Spacer(Modifier.height(30.dp))
-
-                TextField(
-                    value = viewModel.desc,
-                    onValueChange = { viewModel.onEvent(EventsEvent.OnDescChange(it)) },
-                    label = { Text(text = "Event Description") },
-                    minLines = 5
-                )
-
-
+            Button(
+                onClick = {
+                    if (multipleStoragePermissionsState.allPermissionsGranted) {
+                        photoPicker.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    } else {
+                        multipleStoragePermissionsState.launchMultiplePermissionRequest()
+                    }
+                }
+            ) {
+                Text("Choose Photos")
             }
+            LazyRow(
+                modifier = Modifier.height(200.dp),
+                horizontalArrangement =  Arrangement.spacedBy(8.dp)
+            ) {
+                items(viewModel.selectedImages) {
+                    AsyncImage(model = it, contentDescription = null)
+                }
+            }
+            Column() {
+                for (uri in viewModel.selectedImages) {
+                    Text(uri.toString())
+                }
+            }
+
+            Spacer(Modifier.height(30.dp))
+
+            TextField(
+                value = viewModel.desc,
+                onValueChange = { viewModel.onEvent(EventsEvent.OnDescChange(it)) },
+                label = { Text(text = "Event Description") },
+                minLines = 5
+            )
+
+
         }
+    }
 
 }
+
+
