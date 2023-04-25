@@ -3,6 +3,7 @@ package com.dudqo.eventplanner.screens.events
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -131,12 +132,15 @@ fun EventViewScreen(
                 verticalArrangement = Arrangement.Center,
             ) {
                 if (viewModel.selectedImages.isNotEmpty()) {
-                    LazyRow() {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
+                    ) {
                         items(viewModel.selectedImages) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(400.dp)
+                                    .padding(horizontal = 8.dp, vertical = 8.dp)
                             ) {
                                 AsyncImage(model = Uri.parse(it), contentDescription = null)
                             }

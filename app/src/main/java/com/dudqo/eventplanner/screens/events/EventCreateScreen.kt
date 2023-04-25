@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextOverflow
@@ -427,6 +428,7 @@ fun EventCreateScreen(
                     AsyncImage(model = it, contentDescription = null)
                 }
             }
+
 
             Spacer(Modifier.height(30.dp))
 

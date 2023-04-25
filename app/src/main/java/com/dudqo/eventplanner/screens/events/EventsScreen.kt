@@ -12,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -75,17 +76,29 @@ fun EventsScreen(
                                 navController.navigate(
                                     EventScreen.ViewScreen.route +
                                             "?eventId=${it.id}"
-                                ) },
+                                )
+                            },
                     ) {
-                        Text(
-                            text = it.title,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 24.dp)
-                        )
+                        if (it.images.isNotEmpty()) {
+                            AsyncImage(
+                                modifier = Modifier.fillMaxWidth().height(150.dp),
+                                model = it.images.elementAt(0),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop
+                            )
+
+                        }
+                        Column {
+                            Text(
+                                text = it.title,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 24.dp)
+                            )
+                        }
 
                     }
 
