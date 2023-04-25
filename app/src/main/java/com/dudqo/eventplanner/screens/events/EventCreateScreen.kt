@@ -92,33 +92,13 @@ fun EventCreateScreen(
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
         onResult = {
-            val savedUris = mutableListOf<Uri>()
-            for (uri in it) {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val bitmap = BitmapFactory.decodeStream(inputStream)
-                //inputStream?.close()
-
-                val filename = "${System.currentTimeMillis()}.jpg"
-                context.openFileOutput(filename, MODE_PRIVATE).use {stream ->
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                }
-
-
-                val file = File(context.filesDir, filename)
-                savedUris.add(Uri.fromFile(file))
-            }
-            viewModel.selectedImages = savedUris.map {uri ->
-                uri.toString()
-            }
+            viewModel.uris = it
         })
     viewModel.placesClient = Places.createClient(context)
     viewModel.fusedLocationClient =
         LocationServices.getFusedLocationProviderClient(context)
     viewModel.geoCoder = Geocoder(context)
 
-/*    viewModel.imagesBitmap = viewModel.selectedImages.map {
-        ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, it))
-    }*/
 
     BackHandler {
         openWarningDialog.value = true
@@ -174,7 +154,7 @@ fun EventCreateScreen(
                 },
                 actions = {
                     TextButton(onClick = {
-                        openDiscardDialog.value = true
+                        openWarningDialog.value = true
                     }) {
                         Text(
                             text = "Discard"
@@ -185,13 +165,28 @@ fun EventCreateScreen(
                         if (viewModel.title == "") {
                             Toast.makeText(context, "Title is required to create an event", Toast.LENGTH_SHORT).show()
                         } else {
-/*                            viewModel.selectedImages.map {
-                                val input = context.contentResolver.openInputStream(it)
-                                val outputFile =
-                                    context.filesDir.resolve("${it.path.toString()}.jpg")
-                                input?.copyTo(outputFile.outputStream())
-                                input?.close()
-                                outputFile.toUri()
+                            val savedUris = mutableListOf<Uri>()
+                            for (uri in viewModel.uris) {
+                                val inputStream = context.contentResolver.openInputStream(uri)
+                                val bitmap = BitmapFactory.decodeStream(inputStream)
+
+                                val filename = "${System.currentTimeMillis()}.jpg"
+                                context.openFileOutput(filename, MODE_PRIVATE).use {stream ->
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                                }
+
+
+                                val file = File(context.filesDir, filename)
+                                savedUris.add(Uri.fromFile(file))
+                            }
+                            viewModel.selectedImages = savedUris.map {uri ->
+                                uri.toString()
+                            }
+                            if (viewModel.tempImages != viewModel.selectedImages) {
+                                viewModel.deleteImages(viewModel.tempImages)
+                            }
+/*                            if (viewModel.deleted) {
+                                Toast.makeText(context, "file deleted", Toast.LENGTH_SHORT).show()
                             }*/
 
                             viewModel.onEvent(
@@ -211,39 +206,6 @@ fun EventCreateScreen(
 
         }
     ) {
-        if (openDiscardDialog.value) {
-            AlertDialog(
-                onDismissRequest = { openDiscardDialog.value = false },
-                title = {
-                    Text(text = "Discard Changes?")
-                },
-                text = {
-                    Text(
-                        "All unsaved changes will be lost"
-                    )
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            openDiscardDialog.value = false
-                            navController.popBackStack()
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            openDiscardDialog.value = false
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-
-            )
-        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -451,8 +413,10 @@ fun EventCreateScreen(
 
             Spacer(Modifier.height(30.dp))
 
+
             Button(
                 onClick = {
+                    //viewModel.deleteImages()
                     if (multipleStoragePermissionsState.allPermissionsGranted) {
                         photoPicker.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -468,7 +432,7 @@ fun EventCreateScreen(
                 modifier = Modifier.height(200.dp),
                 horizontalArrangement =  Arrangement.spacedBy(8.dp)
             ) {
-                items(viewModel.selectedImages) {
+                items(viewModel.uris) {
                     AsyncImage(model = it, contentDescription = null)
                 }
             }

@@ -27,6 +27,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -45,9 +46,12 @@ class EventsViewModel @Inject constructor(
     var timeInMillis by mutableStateOf(0L)
     var isPrivate by mutableStateOf(false)
     var useCurrLocation by mutableStateOf(false)
+    var deleted by mutableStateOf(false)
     var currentEventId: Int? = null
     var state by mutableStateOf(EventState())
     var selectedImages by mutableStateOf<List<String>>(emptyList())
+    var tempImages by mutableStateOf<List<String>>(emptyList())
+    var uris by mutableStateOf<List<Uri>>(emptyList())
     var imagesBitmap by mutableStateOf<List<Bitmap>>(emptyList())
     private var job: Job? = null
     lateinit var currEvent: Event
@@ -80,6 +84,8 @@ class EventsViewModel @Inject constructor(
                         address = event.address.toString()
                         time = event.time
                         selectedImages = event.images
+                        uris = event.images.map { Uri.parse(it) }
+                        tempImages = event.images
                     }
                 }
             }
@@ -112,10 +118,6 @@ class EventsViewModel @Inject constructor(
             }
             is EventsEvent.OnCreateEventClick -> {
                 viewModelScope.launch {
-/*                    for (uri in selectedImages) {
-                        val source = ImageDecoder.createSource(requireActivity().contentResolver, imageUri)
-                        imagesBitmap.add(ImageDecoder.decodeBitmap(source))
-                    }*/
                     if (useCurrLocation) {
                         repository.insertEvent(
                             Event(
@@ -209,6 +211,13 @@ class EventsViewModel @Inject constructor(
         viewModelScope.launch {
             val geocodeAddress = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             address = geocodeAddress?.get(0)?.getAddressLine(0).toString()
+        }
+    }
+
+    fun deleteImages(uriList: List<String>) {
+        for (uri in uriList) {
+            deleted = false
+            Uri.parse(uri).path?.let {deleted = File(it).delete() }
         }
     }
 }
