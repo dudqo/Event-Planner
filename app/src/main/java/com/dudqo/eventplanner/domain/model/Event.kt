@@ -1,8 +1,5 @@
 package com.dudqo.eventplanner.domain.model
 
-import android.graphics.Bitmap
-import android.net.Uri
-
 data class Event(
     val id: Int?,
     val title: String,

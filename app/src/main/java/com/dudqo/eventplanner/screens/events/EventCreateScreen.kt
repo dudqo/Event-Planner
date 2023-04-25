@@ -2,22 +2,15 @@ package com.dudqo.eventplanner.screens.events
 
 import android.Manifest
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.location.Geocoder
 import android.net.Uri
-import android.os.Build
-import android.text.method.TextKeyListener.clear
-import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -30,18 +23,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.core.content.FileProvider
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -54,9 +43,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import java.io.File
-import java.io.FileOutputStream
 import java.text.SimpleDateFormat
-import java.util.Collections.addAll
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -416,7 +403,6 @@ fun EventCreateScreen(
 
             Button(
                 onClick = {
-                    //viewModel.deleteImages()
                     if (multipleStoragePermissionsState.allPermissionsGranted) {
                         photoPicker.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -434,11 +420,6 @@ fun EventCreateScreen(
             ) {
                 items(viewModel.uris) {
                     AsyncImage(model = it, contentDescription = null)
-                }
-            }
-            Column() {
-                for (uri in viewModel.selectedImages) {
-                    Text(uri.toString())
                 }
             }
 

@@ -2,12 +2,8 @@ package com.dudqo.eventplanner.screens.events
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.location.Geocoder
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -52,7 +48,6 @@ class EventsViewModel @Inject constructor(
     var selectedImages by mutableStateOf<List<String>>(emptyList())
     var tempImages by mutableStateOf<List<String>>(emptyList())
     var uris by mutableStateOf<List<Uri>>(emptyList())
-    var imagesBitmap by mutableStateOf<List<Bitmap>>(emptyList())
     private var job: Job? = null
     lateinit var currEvent: Event
     lateinit var fusedLocationClient: FusedLocationProviderClient
