@@ -1,7 +1,9 @@
 package com.dudqo.eventplanner.screens.events
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.location.Geocoder
+import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -21,6 +23,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -39,8 +42,12 @@ class EventsViewModel @Inject constructor(
     var timeInMillis by mutableStateOf(0L)
     var isPrivate by mutableStateOf(false)
     var useCurrLocation by mutableStateOf(false)
+    var deleted by mutableStateOf(false)
     var currentEventId: Int? = null
     var state by mutableStateOf(EventState())
+    var selectedImages by mutableStateOf<List<String>>(emptyList())
+    var tempImages by mutableStateOf<List<String>>(emptyList())
+    var uris by mutableStateOf<List<Uri>>(emptyList())
     private var job: Job? = null
     lateinit var currEvent: Event
     lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -71,6 +78,10 @@ class EventsViewModel @Inject constructor(
                         lng = event.lng
                         address = event.address.toString()
                         time = event.time
+                        selectedImages = event.images
+                        uris = event.images.map { Uri.parse(it) }
+                        tempImages = event.images
+                        timeInMillis = event.timeInMillis
                     }
                 }
             }
@@ -103,9 +114,37 @@ class EventsViewModel @Inject constructor(
             }
             is EventsEvent.OnCreateEventClick -> {
                 viewModelScope.launch {
-                    repository.insertEvent(
-                        Event(currentEventId, title, lat, lng, address, desc, time, isPrivate)
-                    )
+                    if (useCurrLocation) {
+                        repository.insertEvent(
+                            Event(
+                                currentEventId,
+                                title,
+                                state.lastKnownLocation!!.latitude,
+                                state.lastKnownLocation!!.longitude,
+                                address,
+                                desc,
+                                time,
+                                isPrivate,
+                                selectedImages,
+                                timeInMillis
+                            )
+                        )
+                    } else {
+                        repository.insertEvent(
+                            Event(
+                                currentEventId,
+                                title,
+                                lat,
+                                lng,
+                                address,
+                                desc,
+                                time,
+                                isPrivate,
+                                selectedImages,
+                                timeInMillis
+                            )
+                        )
+                    }
                 }
             }
             is EventsEvent.OnDeleteEventClick -> {
@@ -149,8 +188,6 @@ class EventsViewModel @Inject constructor(
                 state = state.copy(
                     lastKnownLocation = it
                 )
-                lat = it.latitude
-                lng = it.longitude
             }
     }
 
@@ -172,6 +209,13 @@ class EventsViewModel @Inject constructor(
         viewModelScope.launch {
             val geocodeAddress = geoCoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             address = geocodeAddress?.get(0)?.getAddressLine(0).toString()
+        }
+    }
+
+    fun deleteImages(uriList: List<String>) {
+        for (uri in uriList) {
+            deleted = false
+            Uri.parse(uri).path?.let {deleted = File(it).delete() }
         }
     }
 }

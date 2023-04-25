@@ -1,14 +1,25 @@
 package com.dudqo.eventplanner.screens.events
 
 import android.Manifest
+import android.content.Context.MODE_PRIVATE
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Geocoder
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,24 +28,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalLayoutApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun EventCreateScreen(
@@ -48,20 +67,37 @@ fun EventCreateScreen(
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
+    val multipleStoragePermissionsState = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    )
 
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val autoComplete = remember { mutableStateOf(false) }
     val openDateDialog = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
     val openDiscardDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
     val openWarningDialog = remember { mutableStateOf(false) }
+    val dateFormat = remember { mutableStateOf(SimpleDateFormat(
+        "EEEE, MMM d, yyyy",
+        Locale.US)) }
     val timeState = rememberTimePickerState()
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(),
+        onResult = {
+            viewModel.uris = it
+        })
     viewModel.placesClient = Places.createClient(context)
     viewModel.fusedLocationClient =
         LocationServices.getFusedLocationProviderClient(context)
     viewModel.geoCoder = Geocoder(context)
-    
+
+
     BackHandler {
         openWarningDialog.value = true
     }
@@ -116,7 +152,7 @@ fun EventCreateScreen(
                 },
                 actions = {
                     TextButton(onClick = {
-                        openDiscardDialog.value = true
+                        openWarningDialog.value = true
                     }) {
                         Text(
                             text = "Discard"
@@ -127,6 +163,30 @@ fun EventCreateScreen(
                         if (viewModel.title == "") {
                             Toast.makeText(context, "Title is required to create an event", Toast.LENGTH_SHORT).show()
                         } else {
+                            val savedUris = mutableListOf<Uri>()
+                            for (uri in viewModel.uris) {
+                                val inputStream = context.contentResolver.openInputStream(uri)
+                                val bitmap = BitmapFactory.decodeStream(inputStream)
+
+                                val filename = "${System.currentTimeMillis()}.jpg"
+                                context.openFileOutput(filename, MODE_PRIVATE).use {stream ->
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                                }
+
+
+                                val file = File(context.filesDir, filename)
+                                savedUris.add(Uri.fromFile(file))
+                            }
+                            viewModel.selectedImages = savedUris.map {uri ->
+                                uri.toString()
+                            }
+                            if (viewModel.tempImages != viewModel.selectedImages) {
+                                viewModel.deleteImages(viewModel.tempImages)
+                            }
+/*                            if (viewModel.deleted) {
+                                Toast.makeText(context, "file deleted", Toast.LENGTH_SHORT).show()
+                            }*/
+
                             viewModel.onEvent(
                                 EventsEvent.OnCreateEventClick
                             )
@@ -144,43 +204,16 @@ fun EventCreateScreen(
 
         }
     ) {
-        if (openDiscardDialog.value) {
-            AlertDialog(
-                onDismissRequest = { openDiscardDialog.value = false },
-                title = {
-                    Text(text = "Discard Changes?")
-                },
-                text = {
-                    Text(
-                        "All unsaved changes will be lost"
-                    )
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            openDiscardDialog.value = false
-                            navController.popBackStack()
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            openDiscardDialog.value = false
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-
-            )
-        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
+                .verticalScroll(rememberScrollState())
+                .padding(it)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row() {
@@ -244,6 +277,9 @@ fun EventCreateScreen(
 
             }*/
             OutlinedTextField(
+                modifier = Modifier.onFocusChanged {focus ->
+                    autoComplete.value = focus.isFocused
+                    },
                 value = viewModel.address,
                 onValueChange = {
                     viewModel.onEvent(EventsEvent.OnAddressChange(it))
@@ -254,12 +290,13 @@ fun EventCreateScreen(
             )
             Column() {
                 AnimatedVisibility(
-                    visible = viewModel.locationAutofill.isNotEmpty() && !viewModel.useCurrLocation,
+                    visible = viewModel.locationAutofill.isNotEmpty() && !viewModel.useCurrLocation && autoComplete.value,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
                     LazyColumn(
+                        modifier = Modifier.height(500.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(viewModel.locationAutofill) {
@@ -290,13 +327,7 @@ fun EventCreateScreen(
                     Text("Select date and time")
                 }
                 Spacer(Modifier.width(10.dp))
-                /*                    Button(
-                                        onClick = {
-                                            openTimeDialog.value = true
-                                        }
-                                    ) {
-                                        Text("Select Time")
-                                    }*/
+
             }
             if (openDateDialog.value) {
 
@@ -310,6 +341,7 @@ fun EventCreateScreen(
                                 openDateDialog.value = false
                                 openTimeDialog.value = true
                                 viewModel.timeInMillis = datePickerState.selectedDateMillis!! + TimeUnit.HOURS.toMillis(4)
+                                viewModel.time = dateFormat.value.format(viewModel.timeInMillis)
                             },
                             enabled = confirmEnabled.value
                         ) {
@@ -336,7 +368,14 @@ fun EventCreateScreen(
 
             if (openTimeDialog.value) {
                 Dialog(
-                    onDismissRequest = { openTimeDialog.value = false },
+                    onDismissRequest = {
+                        dateFormat.value = SimpleDateFormat(
+                            "EEEE, MMM d, yyyy",
+                            Locale.US
+                        )
+                        viewModel.time = dateFormat.value.format(viewModel.timeInMillis)
+                        openTimeDialog.value = false
+                    },
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -344,6 +383,13 @@ fun EventCreateScreen(
                         TimePicker(state = timeState)
                         Button(
                             onClick = {
+                                dateFormat.value = SimpleDateFormat(
+                                    "EEEE, MMM d, yyyy hh:mm aaa",
+                                    Locale.US
+                                )
+                                viewModel.timeInMillis += TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
+                                        TimeUnit.MINUTES.toMillis(timeState.minute.toLong())
+                                viewModel.time = dateFormat.value.format(viewModel.timeInMillis)
                                 openTimeDialog.value = false
                             }
                         ) {
@@ -352,47 +398,51 @@ fun EventCreateScreen(
                     }
                 }
             }
-            //TimeInput(state = timeState)
             if (viewModel.timeInMillis == 0L) {
                 Text("Date not selected")
             } else {
-                if (timeState.hour == 0 && timeState.minute == 0) {
-                    viewModel.time = SimpleDateFormat(
-                        "EEEE, MMM d, yyyy",
-                        Locale.US
-                    ).format(viewModel.timeInMillis)
-/*                    if (timeState.hour > 11) {
-                        viewModel.time += " ${timeState.hour - 11}:${timeState.minute} PM"
-                    } else if (timeState.hour in 1..11) {
-                        viewModel.time += " ${timeState.hour}:${timeState.minute} AM"
-                    } else {
-                        viewModel.time += " 12:${timeState.minute} AM"
-                    }*/
-                } else {
-/*                    viewModel.timeInMillis += TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
-                            TimeUnit.MINUTES.toMillis(timeState.minute.toLong())*/
-                    viewModel.time = SimpleDateFormat(
-                        "EEEE, MMM d, yyyy hh:mm aaa",
-                        Locale.US
-                    ).format(viewModel.timeInMillis + TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
-                            TimeUnit.MINUTES.toMillis(timeState.minute.toLong()))
-                }
                 Text("Date: ${viewModel.time}")
             }
 
+            Spacer(Modifier.height(30.dp))
 
 
-                Spacer(Modifier.height(30.dp))
-
-                TextField(
-                    value = viewModel.desc,
-                    onValueChange = { viewModel.onEvent(EventsEvent.OnDescChange(it)) },
-                    label = { Text(text = "Event Description") },
-                    minLines = 5
-                )
-
-
+            Button(
+                onClick = {
+                    if (multipleStoragePermissionsState.allPermissionsGranted) {
+                        photoPicker.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    } else {
+                        multipleStoragePermissionsState.launchMultiplePermissionRequest()
+                    }
+                }
+            ) {
+                Text("Choose Photos")
             }
+            LazyRow(
+                modifier = Modifier.height(200.dp),
+                horizontalArrangement =  Arrangement.spacedBy(8.dp)
+            ) {
+                items(viewModel.uris) {
+                    AsyncImage(model = it, contentDescription = null)
+                }
+            }
+
+
+            Spacer(Modifier.height(30.dp))
+
+            TextField(
+                value = viewModel.desc,
+                onValueChange = { viewModel.onEvent(EventsEvent.OnDescChange(it)) },
+                label = { Text(text = "Event Description") },
+                minLines = 5
+            )
+
+
         }
+    }
 
 }
+
+

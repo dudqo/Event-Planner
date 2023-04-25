@@ -1,5 +1,6 @@
 package com.dudqo.eventplanner.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -12,5 +13,9 @@ data class EventEntity(
     val address: String?,
     val desc: String,
     val time: String,
-    val isPrivate: Boolean = true
+    val isPrivate: Boolean = true,
+    @ColumnInfo(name = "images", defaultValue = "")
+    val images: List<String>,
+    @ColumnInfo(name = "timeInMillis", defaultValue = "0")
+    val timeInMillis: Long
 )

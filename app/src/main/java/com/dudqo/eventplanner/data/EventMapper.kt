@@ -12,6 +12,8 @@ fun EventEntity.toEvent(): Event {
         desc = desc,
         time = time,
         isPrivate = isPrivate,
+        images = images,
+        timeInMillis = timeInMillis
     )
 }
 
@@ -25,5 +27,7 @@ fun Event.toEventEntity(): EventEntity {
         desc = desc,
         time = time,
         isPrivate = isPrivate,
+        images = images,
+        timeInMillis = timeInMillis
     )
 }
