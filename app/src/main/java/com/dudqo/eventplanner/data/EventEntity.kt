@@ -15,5 +15,7 @@ data class EventEntity(
     val time: String,
     val isPrivate: Boolean = true,
     @ColumnInfo(name = "images", defaultValue = "")
-    val images: List<String>
+    val images: List<String>,
+    @ColumnInfo(name = "timeInMillis", defaultValue = "0")
+    val timeInMillis: Long
 )

@@ -9,5 +9,6 @@ data class Event(
     val desc: String,
     val time: String,
     val isPrivate: Boolean = true,
-    val images: List<String>
+    val images: List<String>,
+    val timeInMillis: Long
 )

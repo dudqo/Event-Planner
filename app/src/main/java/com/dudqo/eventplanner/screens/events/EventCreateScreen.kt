@@ -13,6 +13,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,7 +28,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -69,12 +74,17 @@ fun EventCreateScreen(
     )
 
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val autoComplete = remember { mutableStateOf(false) }
     val openDateDialog = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
     val openDiscardDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
     val openWarningDialog = remember { mutableStateOf(false) }
+    val dateFormat = remember { mutableStateOf(SimpleDateFormat(
+        "EEEE, MMM d, yyyy",
+        Locale.US)) }
     val timeState = rememberTimePickerState()
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
@@ -197,7 +207,12 @@ fun EventCreateScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(it),
+                .padding(it)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                },
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row() {
@@ -261,6 +276,9 @@ fun EventCreateScreen(
 
             }*/
             OutlinedTextField(
+                modifier = Modifier.onFocusChanged {focus ->
+                    autoComplete.value = focus.isFocused
+                    },
                 value = viewModel.address,
                 onValueChange = {
                     viewModel.onEvent(EventsEvent.OnAddressChange(it))
@@ -271,13 +289,13 @@ fun EventCreateScreen(
             )
             Column() {
                 AnimatedVisibility(
-                    visible = viewModel.locationAutofill.isNotEmpty() && !viewModel.useCurrLocation,
+                    visible = viewModel.locationAutofill.isNotEmpty() && !viewModel.useCurrLocation && autoComplete.value,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
                 ) {
                     LazyColumn(
-                        modifier = Modifier.height(200.dp),
+                        modifier = Modifier.height(500.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         items(viewModel.locationAutofill) {
@@ -308,13 +326,7 @@ fun EventCreateScreen(
                     Text("Select date and time")
                 }
                 Spacer(Modifier.width(10.dp))
-                /*                    Button(
-                                        onClick = {
-                                            openTimeDialog.value = true
-                                        }
-                                    ) {
-                                        Text("Select Time")
-                                    }*/
+
             }
             if (openDateDialog.value) {
 
@@ -328,6 +340,7 @@ fun EventCreateScreen(
                                 openDateDialog.value = false
                                 openTimeDialog.value = true
                                 viewModel.timeInMillis = datePickerState.selectedDateMillis!! + TimeUnit.HOURS.toMillis(4)
+                                viewModel.time = dateFormat.value.format(viewModel.timeInMillis)
                             },
                             enabled = confirmEnabled.value
                         ) {
@@ -354,7 +367,14 @@ fun EventCreateScreen(
 
             if (openTimeDialog.value) {
                 Dialog(
-                    onDismissRequest = { openTimeDialog.value = false },
+                    onDismissRequest = {
+                        dateFormat.value = SimpleDateFormat(
+                            "EEEE, MMM d, yyyy",
+                            Locale.US
+                        )
+                        viewModel.time = dateFormat.value.format(viewModel.timeInMillis)
+                        openTimeDialog.value = false
+                    },
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally
@@ -362,6 +382,13 @@ fun EventCreateScreen(
                         TimePicker(state = timeState)
                         Button(
                             onClick = {
+                                dateFormat.value = SimpleDateFormat(
+                                    "EEEE, MMM d, yyyy hh:mm aaa",
+                                    Locale.US
+                                )
+                                viewModel.timeInMillis += TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
+                                        TimeUnit.MINUTES.toMillis(timeState.minute.toLong())
+                                viewModel.time = dateFormat.value.format(viewModel.timeInMillis)
                                 openTimeDialog.value = false
                             }
                         ) {
@@ -370,31 +397,9 @@ fun EventCreateScreen(
                     }
                 }
             }
-            //TimeInput(state = timeState)
             if (viewModel.timeInMillis == 0L) {
                 Text("Date not selected")
             } else {
-                if (timeState.hour == 0 && timeState.minute == 0) {
-                    viewModel.time = SimpleDateFormat(
-                        "EEEE, MMM d, yyyy",
-                        Locale.US
-                    ).format(viewModel.timeInMillis)
-/*                    if (timeState.hour > 11) {
-                        viewModel.time += " ${timeState.hour - 11}:${timeState.minute} PM"
-                    } else if (timeState.hour in 1..11) {
-                        viewModel.time += " ${timeState.hour}:${timeState.minute} AM"
-                    } else {
-                        viewModel.time += " 12:${timeState.minute} AM"
-                    }*/
-                } else {
-/*                    viewModel.timeInMillis += TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
-                            TimeUnit.MINUTES.toMillis(timeState.minute.toLong())*/
-                    viewModel.time = SimpleDateFormat(
-                        "EEEE, MMM d, yyyy hh:mm aaa",
-                        Locale.US
-                    ).format(viewModel.timeInMillis + TimeUnit.HOURS.toMillis((timeState.hour).toLong()) +
-                            TimeUnit.MINUTES.toMillis(timeState.minute.toLong()))
-                }
                 Text("Date: ${viewModel.time}")
             }
 

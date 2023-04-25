@@ -81,6 +81,7 @@ class EventsViewModel @Inject constructor(
                         selectedImages = event.images
                         uris = event.images.map { Uri.parse(it) }
                         tempImages = event.images
+                        timeInMillis = event.timeInMillis
                     }
                 }
             }
@@ -124,7 +125,8 @@ class EventsViewModel @Inject constructor(
                                 desc,
                                 time,
                                 isPrivate,
-                                selectedImages
+                                selectedImages,
+                                timeInMillis
                             )
                         )
                     } else {
@@ -138,7 +140,8 @@ class EventsViewModel @Inject constructor(
                                 desc,
                                 time,
                                 isPrivate,
-                                selectedImages
+                                selectedImages,
+                                timeInMillis
                             )
                         )
                     }
