@@ -67,12 +67,12 @@ fun EventCreateScreen(
     val locationPermissionState = rememberPermissionState(
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-    val multipleStoragePermissionsState = rememberMultiplePermissionsState(
-        listOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    val storagePermissionsState =
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) rememberPermissionState(
+                Manifest.permission.READ_MEDIA_IMAGES,
+        ) else rememberPermissionState(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
         )
-    )
 
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
@@ -409,12 +409,12 @@ fun EventCreateScreen(
 
             Button(
                 onClick = {
-                    if (multipleStoragePermissionsState.allPermissionsGranted) {
+                    if (storagePermissionsState.status.isGranted) {
                         photoPicker.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     } else {
-                        multipleStoragePermissionsState.launchMultiplePermissionRequest()
+                        storagePermissionsState.launchPermissionRequest()
                     }
                 }
             ) {
