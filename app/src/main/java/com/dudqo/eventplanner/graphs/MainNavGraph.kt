@@ -10,12 +10,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.dudqo.eventplanner.screens.FriendsScreen
-import com.dudqo.eventplanner.SettingsScreen
+import com.dudqo.eventplanner.screens.settings.SettingsScreen
 import com.dudqo.eventplanner.screens.events.EventCreateScreen
 import com.dudqo.eventplanner.screens.events.EventViewScreen
 import com.dudqo.eventplanner.screens.events.EventsScreen
 import com.dudqo.eventplanner.screens.home.HomeScreen
-
 @ExperimentalMaterial3Api
 @Composable
 fun MainNavGraph(navController: NavHostController) {

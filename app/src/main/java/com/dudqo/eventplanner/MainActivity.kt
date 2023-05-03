@@ -58,14 +58,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun SettingsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Settings Screen")
-    }
-}
-
-

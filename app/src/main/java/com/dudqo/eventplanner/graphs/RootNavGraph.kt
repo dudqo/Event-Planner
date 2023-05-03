@@ -5,15 +5,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.dudqo.eventplanner.screens.BottomNavBarScreen
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun RootNavGraph(navController: NavHostController) {
+    val auth = Firebase.auth
+
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.MAIN
+        startDestination = Graph.AUTH
     ) {
-        //authNavGraph(navController = navController)
+        authNavGraph(navController = navController)
         composable(route = Graph.MAIN) {
             BottomNavBarScreen()
         }

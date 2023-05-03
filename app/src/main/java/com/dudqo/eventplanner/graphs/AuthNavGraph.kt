@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.dudqo.eventplanner.screens.sign_in.LoginScreen
+import com.dudqo.eventplanner.screens.sign_in.SignUpScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
@@ -14,11 +15,15 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         startDestination = AuthScreen.Login.route
     ) {
         composable(route = AuthScreen.Login.route) {
-            LoginScreen()
+            LoginScreen(navController)
+        }
+        composable(route = AuthScreen.SignUp.route) {
+            SignUpScreen(navController)
         }
     }
 }
 
 sealed class AuthScreen(val route: String) {
-    object Login : AuthScreen(route = "LOGIN")
+    object Login : AuthScreen(route = "login")
+    object SignUp: AuthScreen(route = "sign_up")
 }

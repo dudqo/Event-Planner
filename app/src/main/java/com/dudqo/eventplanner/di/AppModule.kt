@@ -2,9 +2,12 @@ package com.dudqo.eventplanner.di
 
 import android.app.Application
 import androidx.room.Room
+import com.dudqo.eventplanner.data.AuthRepository
+import com.dudqo.eventplanner.data.AuthRepositoryImpl
 import com.dudqo.eventplanner.data.EventDatabase
 import com.dudqo.eventplanner.data.EventRepositoryImplementation
 import com.dudqo.eventplanner.domain.repository.EventRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,6 +32,16 @@ object AppModule {
     @Provides
     fun provideEventRepository(db: EventDatabase): EventRepository {
         return EventRepositoryImplementation(db.dao)
+    }
+
+    @Singleton
+    @Provides
+    fun providesFirebaseAuth() = FirebaseAuth.getInstance()
+
+    @Singleton
+    @Provides
+    fun providesRepositoryImpl(firebaseAuth: FirebaseAuth): AuthRepository {
+        return AuthRepositoryImpl(firebaseAuth)
     }
 }
 
