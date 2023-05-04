@@ -19,14 +19,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.dudqo.eventplanner.screens.friends.FriendsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview
 fun FriendsScreen(
-/*    userData: UserData?,
-    onSignOut: () -> Unit*/
+    viewModel: FriendsViewModel = viewModel()
+    /*    userData: UserData?,
+        onSignOut: () -> Unit*/
 ) {
     /*Column(
         modifier = Modifier.fillMaxSize(),
@@ -83,16 +86,17 @@ fun FriendsScreen(
             modifier = Modifier.fillMaxSize().padding(it),
             verticalArrangement = Arrangement.Center
         ) {
-            Divider()
+           /* Divider()
+            Spacer(Modifier.height(10.dp))
             Row(
                 modifier = Modifier.clickable { },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz",
+                    model = viewModel.profilePic,
                     contentDescription = "Profile picture",
                     modifier = Modifier
-                        .size(80.dp)
+                        .size(70.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
@@ -100,13 +104,14 @@ fun FriendsScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "example@example.com")
+                    Text(text = viewModel.userEmail!!)
                     Spacer(Modifier.height(15.dp))
-                    Text(text = "Firstname Lastname")
+                    Text(text = viewModel.userName!!)
                 }
 
             }
-            Divider()
+            Spacer(Modifier.height(10.dp))
+            Divider()*/
             Text(
                 "Friends:",
                 textAlign = TextAlign.Left,

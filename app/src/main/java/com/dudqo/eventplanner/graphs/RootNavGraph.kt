@@ -15,7 +15,7 @@ fun RootNavGraph(navController: NavHostController) {
     NavHost(
         navController = navController,
         route = Graph.ROOT,
-        startDestination = Graph.AUTH
+        startDestination = if (auth.currentUser == null) Graph.AUTH else Graph.MAIN
     ) {
         authNavGraph(navController = navController)
         composable(route = Graph.MAIN) {
@@ -29,4 +29,5 @@ object Graph {
     const val AUTH = "auth_graph"
     const val MAIN = "main_graph"
     const val EVENT = "event_graph"
+    const val SETTINGS = "settings_graph"
 }

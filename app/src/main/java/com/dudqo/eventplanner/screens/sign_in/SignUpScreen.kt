@@ -149,30 +149,10 @@ fun SignUpScreen(
             }
         }
 
-        Spacer(Modifier.height(25.dp))
+/*        Spacer(Modifier.height(25.dp))
         Divider()
         Spacer(Modifier.height(20.dp))
-        Text("Sign in with")
-        Button(
-            onClick = {
-                //startForResult.launch(googleSignInClient?.signInIntent)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp),
-            shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black,
-                contentColor = Color.White
-            )
-        ) {
-/*            Image(
-                painter = painterResource(id = R.drawable.ic_logo_google),
-                contentDescription = ""
-            )
-            Text(text = "Sign in with Google", modifier = Modifier.padding(6.dp))*/
-        }
-        //SignInButton(context)
+        Text("Sign in with")*/
 
         LaunchedEffect(key1 = state.value?.signUpError) {
             scope.launch{

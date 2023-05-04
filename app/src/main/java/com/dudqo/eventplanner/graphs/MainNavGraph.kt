@@ -15,6 +15,8 @@ import com.dudqo.eventplanner.screens.events.EventCreateScreen
 import com.dudqo.eventplanner.screens.events.EventViewScreen
 import com.dudqo.eventplanner.screens.events.EventsScreen
 import com.dudqo.eventplanner.screens.home.HomeScreen
+import com.dudqo.eventplanner.screens.settings.ProfileScreen
+
 @ExperimentalMaterial3Api
 @Composable
 fun MainNavGraph(navController: NavHostController) {
@@ -29,9 +31,11 @@ fun MainNavGraph(navController: NavHostController) {
             FriendsScreen()
         }
         composable("settings") {
-            SettingsScreen()
+            SettingsScreen(navController = navController)
         }
         eventNavGraph(navController = navController)
+        settingsNavGraph(navController = navController)
+        authNavGraph(navController = navController)
     }
 }
 
@@ -70,7 +74,26 @@ fun NavGraphBuilder.eventNavGraph(navController: NavHostController) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+fun NavGraphBuilder.settingsNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.SETTINGS,
+        startDestination = SettingsScreen.ProfileScreen.route
+    ) {
+        composable(
+            route = SettingsScreen.ProfileScreen.route
+        ) {
+            ProfileScreen(navController)
+        }
+    }
+}
+
 sealed class EventScreen(val route: String) {
     object CreateScreen : EventScreen(route = "create_screen")
     object ViewScreen : EventScreen(route = "view_screen")
+}
+
+sealed class SettingsScreen(val route: String) {
+    object ProfileScreen : EventScreen(route = "profile_screen")
+
 }

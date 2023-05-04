@@ -1,16 +1,15 @@
-package com.dudqo.eventplanner.screens.friends
+package com.dudqo.eventplanner.screens.settings
 
 import androidx.lifecycle.ViewModel
 import com.dudqo.eventplanner.screens.sign_in.UserData
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-
-class FriendsViewModel(): ViewModel() {
+class SettingsViewModel: ViewModel() {
 
     private val userData = Firebase.auth.currentUser?.run {
         UserData(
-            userEmail = email!!,
+            userEmail = email.toString(),
             userName = displayName,
             profilePictureUrl = photoUrl?.toString()
         )
@@ -19,5 +18,4 @@ class FriendsViewModel(): ViewModel() {
     val userEmail = userData?.userEmail
     val userName = userData?.userName
     val profilePic = userData?.profilePictureUrl
-
 }
