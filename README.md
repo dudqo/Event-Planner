@@ -5,6 +5,8 @@ Create, view, and edit events.
 
 View event locations on google maps.
 
-![Screenshot_20230420-172311_Event Planner](https://user-images.githubusercontent.com/43072113/234157580-4f5cef68-b818-4fc8-af12-938890357e1d.jpg)
-![Screenshot_20230420-172322_Event Planner](https://user-images.githubusercontent.com/43072113/234157598-182788fa-ba17-4deb-8cea-610c25aea869.jpg)
-![Screenshot_20230420-172316_Event Planner](https://user-images.githubusercontent.com/43072113/234157601-889a1995-e9fa-40aa-8311-e5bf3443bcfc.jpg)
+![Screenshot_20230503-134321_Event Planner](https://user-images.githubusercontent.com/43072113/236291092-858a9b0e-b5bd-40ce-9a5b-02475b7cfba4.jpg)
+![Screenshot_20230426-131727_Event Planner](https://user-images.githubusercontent.com/43072113/236291105-c47db913-bf87-412f-a0db-4959c14b3847.jpg)
+![Screenshot_20230426-131627_Event Planner](https://user-images.githubusercontent.com/43072113/236291130-c7f1a659-cacf-4848-ba3c-897cbf34de1d.jpg)
+![Screenshot_20230426-131621_Event Planner](https://user-images.githubusercontent.com/43072113/236291135-922a3b36-35a5-4bbe-a1c5-3d0be33da045.jpg)
+![Screenshot_20230426-131634_Event Planner](https://user-images.githubusercontent.com/43072113/236291140-8c0cf6c0-62aa-43ed-885c-c5124dbaeed5.jpg)
