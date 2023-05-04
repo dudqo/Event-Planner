@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.dudqo.eventplanner.AutocompleteResult
 import com.dudqo.eventplanner.domain.model.Event
 import com.dudqo.eventplanner.domain.repository.EventRepository
+import com.dudqo.eventplanner.screens.sign_in.UserData
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
@@ -19,6 +20,8 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -33,6 +36,14 @@ class EventsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
+    private val userData = Firebase.auth.currentUser?.run {
+        UserData(
+            userId = uid,
+            userEmail = email.toString(),
+            userName = displayName,
+            profilePictureUrl = photoUrl?.toString()
+        )
+    }
     var title by mutableStateOf("")
     var lat by mutableStateOf(0.00)
     var lng by mutableStateOf(0.00)
@@ -52,6 +63,7 @@ class EventsViewModel @Inject constructor(
     lateinit var currEvent: Event
     lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geoCoder: Geocoder
+
 
     val locationAutofill = mutableStateListOf<AutocompleteResult>()
     lateinit var placesClient: PlacesClient

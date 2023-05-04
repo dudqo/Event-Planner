@@ -1,15 +1,13 @@
 package com.dudqo.eventplanner.screens.sign_in
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dudqo.eventplanner.data.AuthRepository
+import com.dudqo.eventplanner.domain.repository.AuthRepository
 import com.dudqo.eventplanner.util.Resource
 import com.google.firebase.auth.AuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject

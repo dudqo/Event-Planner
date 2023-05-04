@@ -5,7 +5,7 @@ import com.dudqo.eventplanner.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class EventRepositoryImplementation(
+class EventRepositoryImpl(
     private val dao: EventDao
 ):EventRepository {
     override suspend fun insertEvent(event: Event) {

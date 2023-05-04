@@ -39,31 +39,34 @@ fun SettingsScreen(
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center
     ) {
         Divider()
         Spacer(Modifier.height(10.dp))
         Row(
-            modifier = Modifier.clickable {
+            modifier = Modifier.fillMaxWidth().clickable {
                 navController.navigate(Graph.SETTINGS)
             },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            AsyncImage(
-                model = viewModel.profilePic,
-                contentDescription = "Profile picture",
-                modifier = Modifier
-                    .size(70.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
+            if (viewModel.profilePic != null) {
+                AsyncImage(
+                    model = viewModel.profilePic,
+                    contentDescription = "Profile picture",
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = viewModel.userEmail!!)
+                Text(text = viewModel.userEmail.toString())
                 Spacer(Modifier.height(15.dp))
-                Text(text = viewModel.userName!!)
+                if (viewModel.userName != null) {
+                    Text(text = viewModel.userName.toString())
+                }
             }
 
         }

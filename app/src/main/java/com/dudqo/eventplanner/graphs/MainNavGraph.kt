@@ -16,6 +16,7 @@ import com.dudqo.eventplanner.screens.events.EventViewScreen
 import com.dudqo.eventplanner.screens.events.EventsScreen
 import com.dudqo.eventplanner.screens.home.HomeScreen
 import com.dudqo.eventplanner.screens.settings.ProfileScreen
+import com.dudqo.eventplanner.screens.settings.EditProfileScreen
 
 @ExperimentalMaterial3Api
 @Composable
@@ -85,15 +86,21 @@ fun NavGraphBuilder.settingsNavGraph(navController: NavHostController) {
         ) {
             ProfileScreen(navController)
         }
+        composable(
+            route = SettingsScreen.EditProfileScreen.route
+        ) {
+            EditProfileScreen(navController)
+        }
     }
 }
 
 sealed class EventScreen(val route: String) {
-    object CreateScreen : EventScreen(route = "create_screen")
-    object ViewScreen : EventScreen(route = "view_screen")
+    object CreateScreen: EventScreen(route = "create_screen")
+    object ViewScreen: EventScreen(route = "view_screen")
 }
 
 sealed class SettingsScreen(val route: String) {
-    object ProfileScreen : EventScreen(route = "profile_screen")
+    object ProfileScreen: SettingsScreen(route = "profile_screen")
+    object EditProfileScreen: SettingsScreen(route = "edit_profile_screen")
 
 }

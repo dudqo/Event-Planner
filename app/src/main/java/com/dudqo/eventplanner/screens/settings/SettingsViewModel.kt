@@ -7,8 +7,10 @@ import com.google.firebase.ktx.Firebase
 
 class SettingsViewModel: ViewModel() {
 
+
     private val userData = Firebase.auth.currentUser?.run {
         UserData(
+            userId = uid,
             userEmail = email.toString(),
             userName = displayName,
             profilePictureUrl = photoUrl?.toString()

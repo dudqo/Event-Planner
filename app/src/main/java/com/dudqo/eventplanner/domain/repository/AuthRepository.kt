@@ -1,4 +1,4 @@
-package com.dudqo.eventplanner.data
+package com.dudqo.eventplanner.domain.repository
 
 import com.dudqo.eventplanner.util.Resource
 import com.google.firebase.auth.AuthCredential

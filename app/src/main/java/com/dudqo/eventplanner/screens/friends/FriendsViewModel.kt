@@ -10,6 +10,7 @@ class FriendsViewModel(): ViewModel() {
 
     private val userData = Firebase.auth.currentUser?.run {
         UserData(
+            userId = uid,
             userEmail = email!!,
             userName = displayName,
             profilePictureUrl = photoUrl?.toString()

@@ -80,7 +80,6 @@ fun EventCreateScreen(
     val openDateDialog = remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     val confirmEnabled = remember {derivedStateOf { datePickerState.selectedDateMillis != null }}
-    val openDiscardDialog = remember { mutableStateOf(false) }
     val openTimeDialog = remember { mutableStateOf(false) }
     val openWarningDialog = remember { mutableStateOf(false) }
     val dateFormat = remember { mutableStateOf(SimpleDateFormat(

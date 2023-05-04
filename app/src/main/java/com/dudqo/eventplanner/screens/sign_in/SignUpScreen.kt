@@ -66,6 +66,7 @@ fun SignUpScreen(
     //val viewModel: SignUpViewModel = hiltViewModel()
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -117,10 +118,38 @@ fun SignUpScreen(
                 }
             }
         )
+        Spacer(Modifier.height(10.dp))
+        TextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text(text = "Confirm Password") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+            singleLine = true,
+            placeholder = { Text("Confirm Password") },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    Icons.Filled.Visibility
+                else Icons.Filled.VisibilityOff
+
+                val description = if (passwordVisible) "Hide password" else "Show password"
+
+                IconButton(onClick = {passwordVisible = !passwordVisible}){
+                    Icon(imageVector  = image, description)
+                }
+            }
+        )
         Button(
             onClick = {
                 scope.launch {
-                    viewModel.registerUser(email, password)
+                    if (password == confirmPassword) {
+                        viewModel.registerUser(email, password)
+                    } else {
+                        Toast.makeText(context, "Password does not match", Toast.LENGTH_LONG).show()
+                    }
+
                 }
 
             },

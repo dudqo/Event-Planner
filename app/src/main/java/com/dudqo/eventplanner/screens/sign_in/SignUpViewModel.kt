@@ -2,7 +2,7 @@ package com.dudqo.eventplanner.screens.sign_in
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dudqo.eventplanner.data.AuthRepository
+import com.dudqo.eventplanner.domain.repository.AuthRepository
 import com.dudqo.eventplanner.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
